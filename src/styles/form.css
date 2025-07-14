@@ -1,0 +1,202 @@
+/* Input styles */
+.input-container {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+.input-label {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+.input-box {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+/* DropInput styles */
+.dropinput-container {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+.dropinput-label {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+.dropinput-select {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+/* AddInput styles */
+.addinput-container {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+.addinput-label {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+.addinput-textarea {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  resize: vertical;
+}
+
+/* DateInput styles */
+.dateinput-container {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+.dateinput-label {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+.dateinput-box {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.form-section {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  background: #fff;
+}
+
+.form-section h3 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.form-row {
+  display: flex;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.form-col {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.birth-registration-form .input-box,
+.birth-registration-form .dropinput-select,
+.birth-registration-form .dateinput-box,
+.birth-registration-form .addinput-textarea,
+.death-registration-form .input-box,
+.death-registration-form .dropinput-select,
+.death-registration-form .dateinput-box,
+.death-registration-form .addinput-textarea {
+  width: 100%;
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+  .form-row {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+.btn-with-gradient {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgb(5, 130, 172), rgb(16, 85, 97));
+  border-radius: 3px;
+  font-size: 15px;
+  height: 36px;
+  padding: 0 16px;
+  color: #ffffff;
+  border: none;
+  width: fit-content;
+  min-width: 120px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  box-sizing: border-box;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.btn-with-gradient:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.btn-with-gradient:focus{
+  outline: none;
+}
+
+.btn-with-gradient:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: translateY(0);
+}
+
+.btn-with-gradient.outline {
+  background: #f0f0f0;
+  color: #888 !important;
+  border: 1.5px solid #b0b0b0;
+  box-shadow: none;
+  opacity: 0.85;
+}
+
+.spinner {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  margin-right: 0.5em;
+  border: 2px solid #fff;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.popup-content {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.popup-content p {
+  margin: 0 0 1rem;
+  font-size: 1.1rem;
+} 
