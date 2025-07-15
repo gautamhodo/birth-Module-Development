@@ -47,4 +47,26 @@ export async function updateDeathRecord(id: string, data: any) {
   if (!res.ok) throw new Error('Failed to update death record');
   return res.json();
 }
+
+export async function getMortuaryRecords() {
+  const res = await fetch(`${API_BASE}/mortuaryRecords`);
+  if (!res.ok) throw new Error('Failed to fetch mortuary records');
+  return res.json();
+}
+
+export async function addMortuaryRecord(data: any) {
+  const res = await fetch(`${API_BASE}/mortuaryRecords`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error('Failed to add mortuary record');
+  return res.json();
+}
+
+export async function deleteMortuaryRecord(id: string) {
+  const res = await fetch(`${API_BASE}/mortuaryRecords/${id}`, { method: 'DELETE' });
+  if (!res.ok) throw new Error('Failed to delete mortuary record');
+  return true;
+}
 // Add more API functions as needed for create/update 

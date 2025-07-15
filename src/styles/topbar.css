@@ -55,6 +55,11 @@
   padding-top: 4px;
 }
 
+.nav-list-button:hover {
+  background: #038ba4 !important;
+  color: #fff !important;
+}
+
 .nav-links-container {
   margin: 0;
   margin-left: -4px;

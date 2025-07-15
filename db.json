@@ -28,12 +28,12 @@
       "dateOfBirth": "2023-01-04",
       "motherName": "Anju",
       "fatherName": "Biju",
-      "birthTime": "10:30",
+      "birthTime": "11:09",
       "length": 50,
       "headCircumference": 34,
       "weight": 3.2,
-      "term": "Full Term",
-      "deliveryType": "Normal",
+      "term": "Pre Term",
+      "deliveryType": "Cesarean",
       "status": "Checked In",
       "xrayId": "XR123456",
       "registeredBy": "System Admin",
@@ -46,6 +46,115 @@
       "bloodGroup": "AB-",
       "nationality": "Indian",
       "": "female"
+    }
+  ],
+  "deathRecords": [
+    {
+      "id": "D01",
+      "firstName": "Antony",
+      "lastName": "Davis",
+      "dateOfBirth": "2001-05-12",
+      "mobileNo": "9090909000",
+      "doctorName": "Abhiraj Rajagopal",
+      "ipNo": "IP25-26-000086",
+      "dateOfDeath": "2024-06-01",
+      "gender": "Male",
+      "causeOfDeath": "Cardiac Arrest",
+      "causeOfDeathType": "Accident",
+      "postmortemDone": "Yes",
+      "pathologistName": "Dr. John Mathew",
+      "placeOfDeath": "Hospital",
+      "deathInformedPerson": "Ravi Kumar",
+      "deathInformedContact": "9876543212",
+      "deathInformedAddress": "123 Main St, Kottayam",
+      "relatives": [
+        {
+          "name": "Priya D",
+          "relation": "Wife",
+          "contact": "9090909001",
+          "address": "123 Main St, Kottayam"
+        },
+        {
+          "name": "Manu D",
+          "relation": "Son",
+          "contact": "9090909002",
+          "address": "123 Main St, Kottayam"
+        }
+      ],
+      "registeredBy": "System Admin",
+      "registeredOn": "2024-06-01T10:30:00",
+      "registeredAt": "Kottayam",
+      "age": 24
+    },
+    {
+      "id": "D02",
+      "firstName": "Latha",
+      "lastName": "Menon",
+      "dateOfBirth": "1975-11-23",
+      "mobileNo": "9876543211",
+      "doctorName": "Dr. Suresh Kumar",
+      "ipNo": "IP25-26-000087",
+      "dateOfDeath": "2024-06-02",
+      "gender": "Female",
+      "causeOfDeath": "Respiratory Failure",
+      "causeOfDeathType": "Pending investigation",
+      "postmortemDone": "No",
+      "pathologistName": "",
+      "placeOfDeath": "Home",
+      "deathInformedPerson": "Anil Menon",
+      "deathInformedContact": "9876543213",
+      "deathInformedAddress": "456 Lake Rd, Kottayam",
+      "relatives": [
+        {
+          "name": "Ramesh Menon",
+          "relation": "Husband",
+          "contact": "9876543214",
+          "address": "456 Lake Rd, Kottayam"
+        }
+      ],
+      "registeredBy": "System Admin",
+      "registeredOn": "2024-06-02T14:15:00",
+      "registeredAt": "Kottayam",
+      "age": 48
+    }
+  ],
+  "mortuaryRecords": [
+    {
+      "id": "D01",
+      "firstName": "Antony",
+      "lastName": "D",
+      "dateOfBirth": "2001-05-12",
+      "mobileNo": "9090909000",
+      "doctorName": "Abhiraj Rajagopal",
+      "ipNo": "IP25-26-000086",
+      "dateOfDeath": "2024-06-01",
+      "gender": "Male",
+      "causeOfDeath": "Cardiac Arrest",
+      "causeOfDeathType": "Natural",
+      "postmortemDone": "Yes",
+      "pathologistName": "Dr. John Mathew",
+      "placeOfDeath": "Hospital",
+      "deathInformedPerson": "Ravi Kumar",
+      "deathInformedContact": "9876543212",
+      "deathInformedAddress": "123 Main St, Kottayam",
+      "relatives": [
+        {
+          "name": "Priya D",
+          "relation": "Wife",
+          "contact": "9090909001",
+          "address": "123 Main St, Kottayam"
+        },
+        {
+          "name": "Manu D",
+          "relation": "Son",
+          "contact": "9090909002",
+          "address": "123 Main St, Kottayam"
+        }
+      ],
+      "registeredBy": "System Admin",
+      "registeredOn": "2024-06-01T10:30:00",
+      "registeredAt": "Kottayam",
+      "age": 24
     }
   ]
 }

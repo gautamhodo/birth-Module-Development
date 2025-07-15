@@ -82,6 +82,6 @@ span{
   transition: color 0.2s;
 }
 .print-action-link:hover {
-  color: #038ba4;
+  color: #02677e !important;
 }
 

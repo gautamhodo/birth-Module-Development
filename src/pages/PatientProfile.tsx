@@ -150,23 +150,23 @@ const PatientProfile: React.FC<PatientProfileProps> = ({ id: propId, isModal = f
           </div>
           {/* New Born Details (expandable) below edit, right aligned */}
           <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', margin: '12px 0 16px 0' }}>
-            <button onClick={() => setShowNewBornDetails(v => !v)} style={{ border: '1px solid #b0b0b0', borderRadius: 5, background: '#f8fafc', padding: '8px 18px', fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <button onClick={() => setShowNewBornDetails(v => !v)} style={{ border: '1px solid #b0b0b0', borderRadius: 5, background: '#f8fafc', padding: '8px 18px', fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
               <img src={babyIcon} alt="New Born" style={{ width: 18, height: 18, marginRight: 6 }} />
               New Born Details {showNewBornDetails ? '▲' : '▼'}
-            </button>
-            {showNewBornDetails && (
-              <div style={{ background: '#fff', border: '1.5px solid #fff', borderRadius: 8, padding: '1.5rem 2.5rem', marginLeft: 12, minWidth: 320, width: '100%', boxShadow: '0 2px 12px rgba(0,0,0,0.06)' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.2rem' }}>
-                  <div><span style={{ color: '#888', fontSize: 13 }}>Mother Name</span><br /><span style={{ fontWeight: 600 }}>{parentData?.firstName} {parentData?.lastName}</span></div>
-                  <div><span style={{ color: '#888', fontSize: 13 }}>Weight</span><br /><span style={{ fontWeight: 600 }}>{birthRecord.weight} Kg</span></div>
-                  <div><span style={{ color: '#888', fontSize: 13 }}>Birth Time</span><br /><span style={{ fontWeight: 600 }}>{birthRecord.birthTime}</span></div>
-                  <div><span style={{ color: '#888', fontSize: 13 }}>Delivery Type</span><br /><span style={{ fontWeight: 600 }}>{birthRecord.deliveryType}</span></div>
-                  <div><span style={{ color: '#888', fontSize: 13 }}>Length</span><br /><span style={{ fontWeight: 600 }}>{birthRecord.length} cm</span></div>
-                  <div><span style={{ color: '#888', fontSize: 13 }}>Term</span><br /><span style={{ fontWeight: 600 }}>{birthRecord.term}</span></div>
-                  <div><span style={{ color: '#888', fontSize: 13 }}>Head Circumference</span><br /><span style={{ fontWeight: 600 }}>{birthRecord.headCircumference} cm</span></div>
+              </button>
+              {showNewBornDetails && (
+                <div style={{ background: '#fff', border: '1.5px solid #fff', borderRadius: 8, padding: '1.5rem 2.5rem', marginLeft: 12, minWidth: 320, width: '100%', boxShadow: '0 2px 12px rgba(0,0,0,0.06)' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.2rem' }}>
+                    <div><span style={{ color: '#888', fontSize: 13 }}>Mother Name</span><br /><span style={{ fontWeight: 600 }}>{parentData?.firstName} {parentData?.lastName}</span></div>
+                    <div><span style={{ color: '#888', fontSize: 13 }}>Weight</span><br /><span style={{ fontWeight: 600 }}>{birthRecord.weight} Kg</span></div>
+                    <div><span style={{ color: '#888', fontSize: 13 }}>Birth Time</span><br /><span style={{ fontWeight: 600 }}>{birthRecord.birthTime}</span></div>
+                    <div><span style={{ color: '#888', fontSize: 13 }}>Delivery Type</span><br /><span style={{ fontWeight: 600 }}>{birthRecord.deliveryType}</span></div>
+                    <div><span style={{ color: '#888', fontSize: 13 }}>Length</span><br /><span style={{ fontWeight: 600 }}>{birthRecord.length} cm</span></div>
+                    <div><span style={{ color: '#888', fontSize: 13 }}>Term</span><br /><span style={{ fontWeight: 600 }}>{birthRecord.term}</span></div>
+                    <div><span style={{ color: '#888', fontSize: 13 }}>Head Circumference</span><br /><span style={{ fontWeight: 600 }}>{birthRecord.headCircumference} cm</span></div>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
           </div>
           {/* Row 2: Age & Gender, Address, Blood Group */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 32, marginBottom: 16 }}>
@@ -183,52 +183,50 @@ const PatientProfile: React.FC<PatientProfileProps> = ({ id: propId, isModal = f
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem', marginTop: 24, marginBottom: 24 }}>
             <div><span style={{ color: '#888', fontSize: 13 }}>Date of Birth</span><br /><span style={{ fontWeight: 600 }}>{birthRecord.dateOfBirth}</span></div>
             <div><span style={{ color: '#888', fontSize: 13 }}>Place of Birth</span><br /><span style={{ fontWeight: 600 }}>{birthRecord.placeOfBirth}</span></div>
+            <div><span style={{ color: '#888', fontSize: 13 }}>Age</span><br /><span style={{ fontWeight: 600 }}>{birthRecord.dateOfBirth ? (new Date().getFullYear() - new Date(birthRecord.dateOfBirth).getFullYear()) : '-'}</span></div>
             <div><span style={{ color: '#888', fontSize: 13 }}>Father Name</span><br /><span style={{ fontWeight: 600 }}>{birthRecord.fatherName}</span></div>
             <div><span style={{ color: '#888', fontSize: 13 }}>Consulting Doctor</span><br /><span style={{ fontWeight: 600 }}>{parentData?.doctor}</span></div>
             <div><span style={{ color: '#888', fontSize: 13 }}>Civil ID</span><br /><span style={{ fontWeight: 600 }}>{parentData?.civilIds}</span></div>
           </div>
-
-          {/* Extra Info Section (Status, QR, Xray, Registration, Print) */}
-          <div style={{ borderTop: '1px solid #eee', padding: '24px 0 0 0', marginBottom: 24 }}>
-            <div style={{ display: 'flex', gap: 32, alignItems: 'flex-start', marginBottom: 24 }}>
-              <div style={{ flex: 1 }}>
-                <div style={{ color: '#888', fontSize: 13 }}>Status</div>
-                <div style={{ fontWeight: 700, marginBottom: 12 }}>Checked In</div>
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ color: '#888', fontSize: 13 }}>Scan QR</div>
-                <img src={`https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(window.location.origin + '/birth-report/' + (birthRecord.id || id || ''))}`} alt="QR Code" style={{ marginTop: 4, cursor: 'pointer' }} onClick={downloadBirthReport} />
-              </div>
+        </div>
+        {/* Bottom Section: Status, QR, Registration, Print Actions */}
+        <div style={{ background: '#fff', borderRadius: 10, boxShadow: '0 8px 32px rgba(0,0,0,0.10)', padding: '1.5rem 2.5rem', margin: '2rem 0', minHeight: 120 }}>
+          <div style={{ display: 'flex', gap: 32, alignItems: 'flex-start', marginBottom: 24 }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ color: '#888', fontSize: 13 }}>Status</div>
+              <div style={{ fontWeight: 700, marginBottom: 12 }}>{birthRecord.status || '-'}</div>
             </div>
-            <div style={{ display: 'flex', gap: 32, alignItems: 'center', borderTop: '1px solid #eee', paddingTop: 16 }}>
-              <div style={{ flex: 1 }}>
-                <div style={{ color: '#888', fontSize: 13 }}>Patient registered by</div>
-                <div style={{ fontWeight: 700 }}>System Admin</div>
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ color: '#888', fontSize: 13 }}>Patient registered on</div>
-                <div style={{ fontWeight: 700 }}>11/07/2025 2:28PM</div>
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ color: '#888', fontSize: 13 }}>Patient registered at</div>
-                <div style={{ fontWeight: 700 }}>Kottayam</div>
-              </div>
-              <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 12 }}>
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', minWidth: 220 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', borderBottom: '1px solid #eee', paddingBottom: 2, marginBottom: 4, justifyContent: 'flex-end' }}>
-                    <svg width="18" height="18" fill="none" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>
-                    <span style={{ color: '#888', fontSize: 13, fontWeight: 500 }}>Print Actions</span>
-                  </div>
-                  <div style={{ display: 'flex', gap: 24, marginTop: 4, width: '100%', justifyContent: 'flex-end' }}>
-                    <a href="#" className="print-action-link" onClick={e => { e.preventDefault(); downloadBirthReport(); }}>Print Birth Report</a>
-                    <a href="#" className="print-action-link">Barcode</a>
-                  </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ color: '#888', fontSize: 13 }}>Scan QR</div>
+              <img src={`https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(birthRecord.qrData || (window.location.origin + '/birth-report/' + (birthRecord.id || id || '')) )}`} alt="QR Code" style={{ marginTop: 4, cursor: 'pointer' }} onClick={downloadBirthReport} />
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 32, alignItems: 'center', borderTop: '1px solid #eee', paddingTop: 16 }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ color: '#888', fontSize: 13 }}>Patient registered by</div>
+              <div style={{ fontWeight: 700 }}>{birthRecord.registeredBy || '-'}</div>
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ color: '#888', fontSize: 13 }}>Patient registered on</div>
+              <div style={{ fontWeight: 700 }}>{birthRecord.registeredOn ? new Date(birthRecord.registeredOn).toLocaleString() : '-'}</div>
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ color: '#888', fontSize: 13 }}>Patient registered at</div>
+              <div style={{ fontWeight: 700 }}>{birthRecord.registeredAt || '-'}</div>
+            </div>
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', minWidth: 220 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', borderBottom: '1px solid #eee', paddingBottom: 2, marginBottom: 4, justifyContent: 'flex-end' }}>
+                  <svg width="18" height="18" fill="none" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>
+                  <span style={{ color: '#888', fontSize: 13, fontWeight: 500 }}>Print Actions</span>
+                </div>
+                <div style={{ display: 'flex', gap: 24, marginTop: 4, width: '100%', justifyContent: 'flex-end' }}>
+                  <a href="#" className="print-action-link" onClick={e => { e.preventDefault(); downloadBirthReport(); }}>Print Birth Report</a>
+                  <a href="#" className="print-action-link">Barcode</a>
                 </div>
               </div>
             </div>
           </div>
-          {/* Generate Report Button */}
-          {/* Removed as per request */}
         </div>
       </PageContainer>
       {/* <Footer /> */}

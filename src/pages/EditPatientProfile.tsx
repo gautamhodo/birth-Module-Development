@@ -38,16 +38,16 @@ const labelStyle = {
   display: 'block',
 };
 
+// Update the main container and section styles to match DeathProfile
 const sectionStyle = {
   background: '#fff',
   borderRadius: 10,
   boxShadow: '0 8px 32px rgba(0,0,0,0.10)',
   padding: '1.5rem 2.5rem',
-  margin: '1rem 0',
-  minHeight: 600,
+  margin: '2rem 0',
+  minHeight: 400,
   maxWidth: 1400,
   width: '96vw',
-  // borderTop: '4px solid #038ba4',
 };
 
 const EditPatientProfile: React.FC = () => {
@@ -218,19 +218,45 @@ const EditPatientProfile: React.FC = () => {
                 <Input label="Head Circumference (cm)" name="headCircumference" value={newBornForm.headCircumference} onChange={handleNewBornChange} placeholder="Head Circumference (cm)" />
               </div>
               <div>
-                <Input label="Term" name="term" value={newBornForm.term} onChange={handleNewBornChange} placeholder="Term" />
+                <DropInput
+                  label="Term"
+                  name="term"
+                  value={newBornForm.term}
+                  onChange={handleNewBornChange}
+                  options={[
+                    { label: 'Full Term', value: 'Full Term' },
+                    { label: 'Pre Term', value: 'Pre Term' },
+                    { label: 'Post Term', value: 'Post Term' },
+                  ]}
+                />
               </div>
               <div>
-                <Input label="Delivery Type" name="deliveryType" value={newBornForm.deliveryType} onChange={handleNewBornChange} placeholder="Delivery Type" />
+                <DropInput
+                  label="Delivery Type"
+                  name="deliveryType"
+                  value={newBornForm.deliveryType}
+                  onChange={handleNewBornChange}
+                  options={[
+                    { label: 'Normal', value: 'Normal' },
+                    { label: 'Cesarean', value: 'Cesarean' },
+                    { label: 'Forceps', value: 'Forceps' },
+                    { label: 'Vacuum', value: 'Vacuum' },
+                  ]}
+                />
               </div>
               <div>
-                <Input label="Birth Time" name="birthTime" value={newBornForm.birthTime} onChange={handleNewBornChange} placeholder="Birth Time" />
+                <Input label="Birth Time" name="birthTime" value={newBornForm.birthTime} onChange={handleNewBornChange} type="time" placeholder="Birth Time" />
               </div>
             </form>
           </>
         )}
         <div style={{ textAlign: 'right', marginTop: 32 }}>
-          <button type="button" style={{ background: '#038ba4', color: '#fff', border: 'none', borderRadius: 5, padding: '12px 32px', fontWeight: 600, fontSize: 16, cursor: 'pointer' }} onClick={handleSave}>
+          <button
+            type="button"
+            className="nav-list-button"
+            style={{ border: 'none', borderRadius: 5, padding: '1px 32px', fontWeight: 500, fontSize: 16, cursor: 'pointer', color: '#fff' }}
+            onClick={handleSave}
+          >
             Save
           </button>
         </div>

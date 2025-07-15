@@ -15,7 +15,6 @@ interface Activity {
 const RecentActivities = () => {
   const [dateFilter, setDateFilter] = useState<string>("");
   const [recentActivities, setRecentActivities] = useState<Activity[]>([]);
-  const [showAll, setShowAll] = useState(false);
   const navigate = useNavigate();
 
   // Mock data - replace with actual API call
@@ -41,7 +40,7 @@ const RecentActivities = () => {
         }));
         // Combine and sort by date descending
         const allActivities = [...birthActivities, ...deathActivities].sort((a, b) => b.date.getTime() - a.date.getTime());
-        setRecentActivities(allActivities);
+        setRecentActivities(allActivities.slice(0, 1)); // Only keep the most recent
       });
   }, []);
 
@@ -62,21 +61,18 @@ const RecentActivities = () => {
 
   const handleActivityClick = (activity: Activity) => {
     const [type, recordId] = activity.id.split('-');
-    navigate(`/profile/${type}/${recordId}`);
+    if (type === 'death') {
+      navigate(`/death-profile/${recordId}`);
+    } else {
+      navigate(`/profile/birth/${recordId}`);
+    }
   };
 
   const handleDateFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setDateFilter(e.target.value);
   };
 
-  const filteredActivities = dateFilter 
-    ? recentActivities.filter(activity => {
-        const activityDate = activity.date.toISOString().split('T')[0];
-        return activityDate === dateFilter;
-      })
-    : recentActivities;
-
-  const activitiesToShow = showAll ? filteredActivities : filteredActivities.slice(0, 2);
+  // Remove showAll, activitiesToShow, and more button logic
 
   return (
     <div className="recent-activities-card">
@@ -93,31 +89,24 @@ const RecentActivities = () => {
         />
       </div>
       <div className="recent-activities-list">
-        {filteredActivities.length > 0 ? (
-          <>
-            {activitiesToShow.map((activity) => (
-              <div 
-                key={activity.id} 
-                className="recent-activity-list-item"
-                onClick={() => handleActivityClick(activity)}
-              >
-                <activity.icon className={`recent-activity-list-icon ${activity.color}`} />
-                <div>
-                  <p className="recent-activity-list-text">
-                    {activity.type === 'birth' ? 'New birth registered' : 'New death registered'}
-                  </p>
-                  <p className="recent-activity-list-subtext">
-                    {activity.name} - {formatTimeAgo(activity.date)}
-                  </p>
-                </div>
+        {recentActivities.length > 0 ? (
+          recentActivities.map((activity) => (
+            <div 
+              key={activity.id} 
+              className="recent-activity-list-item"
+              onClick={() => handleActivityClick(activity)}
+            >
+              <activity.icon className={`recent-activity-list-icon ${activity.color}`} />
+              <div>
+                <p className="recent-activity-list-text">
+                  {activity.type === 'birth' ? 'New birth registered' : 'New death registered'}
+                </p>
+                <p className="recent-activity-list-subtext">
+                  {activity.name} - {formatTimeAgo(activity.date)}
+                </p>
               </div>
-            ))}
-            {filteredActivities.length > 2 && (
-              <button className="recent-activities-more-btn" onClick={() => setShowAll(!showAll)}>
-                {showAll ? 'Show less' : 'More...'}
-              </button>
-            )}
-          </>
+            </div>
+          ))
         ) : (
           <p className="recent-activities-empty">
             {dateFilter ? "No activities found for selected date" : "No recent activities"}

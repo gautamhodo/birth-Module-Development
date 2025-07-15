@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import TopNavBar from './components/TopNavBar';
-import BirthRegistration from './pages/BirthRegistration.tsx';
-import DeathRegistration from './pages/DeathRegistration.tsx';
 import BirthRecords from './pages/BirthRecords.tsx';
 import Certificates from './pages/Certificates.tsx';
 import DeathRecords from './pages/DeathRecords.tsx';
@@ -15,6 +13,9 @@ import Table from './pages/Table.tsx';
 import Footer from './components/Footer.tsx';
 import BirthReportDownload from './pages/BirthReportDownload';
 import EditPatientProfile from './pages/EditPatientProfile';
+import DeathProfile from './pages/DeathProfile';
+import DeathReportDownload from './pages/DeathReportDownload';
+import EditDeathProfile from './pages/EditDeathProfile';
 // Define the props interface for components that receive sidebar props
 // interface SidebarProps {
 //   sidebarCollapsed: boolean;
@@ -46,8 +47,6 @@ const App: React.FC = () => {
           <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} showDate showTime showCalculator />
             <Routes>
               <Route path="/" element={<Page sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar}/>} />
-              <Route path="/birth-registration" element={<BirthRegistration sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
-              <Route path="/death-registration" element={<DeathRegistration sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
               <Route path="/birth-records" element={<BirthRecords sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
               <Route path="/death-records" element={<DeathRecords sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
               <Route path="/certificates" element={<Certificates sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
@@ -56,6 +55,9 @@ const App: React.FC = () => {
               <Route path="/profile/birth/:id" element={<PatientProfile />} />
               <Route path="/birth-report/:id" element={<BirthReportDownload />} />
               <Route path="/edit-patient/:id" element={<EditPatientProfile />} />
+              <Route path="/death-profile/:id" element={<DeathProfile />} />
+              <Route path="/death-report/:id" element={<DeathReportDownload />} />
+              <Route path="/edit-death/:id" element={<EditDeathProfile />} />
             </Routes>
 <Footer/>
           </div>
