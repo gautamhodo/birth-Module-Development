@@ -5,6 +5,7 @@ import PageContainer from '../components/PageContainer';
 import Input from '../components/Input';
 import DateInput from '../components/DateInput';
 import DropInput from '../components/DropInput';
+import API_BASE from '../api/api.ts';
 
 const sectionStyle = {
   background: '#fff',
@@ -41,7 +42,7 @@ const EditDeathProfile: React.FC = () => {
   };
 
   const handleSave = async () => {
-    await fetch(`http://localhost:3000/deathRecords/${id}`, {
+    await fetch(`${API_BASE}/deathRecords/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(form),

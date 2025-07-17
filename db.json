@@ -21,8 +21,8 @@
     {
       "id": "B01",
       "ParentDataId": "P01",
-      "firstName": "AswiN",
-      "lastName": "Nair",
+      "firstName": "Aswin",
+      "lastName": "Nair GK",
       "gender": "male",
       "placeOfBirth": "Tvm",
       "dateOfBirth": "2023-01-04",
@@ -51,9 +51,9 @@
   "deathRecords": [
     {
       "id": "D01",
-      "firstName": "Antony",
-      "lastName": "Davis",
-      "dateOfBirth": "2001-05-12",
+      "firstName": "Kunjunni",
+      "lastName": "Nair",
+      "dateOfBirth": "2001-05-13",
       "mobileNo": "9090909000",
       "doctorName": "Abhiraj Rajagopal",
       "ipNo": "IP25-26-000086",
@@ -97,7 +97,7 @@
       "dateOfDeath": "2024-06-02",
       "gender": "Female",
       "causeOfDeath": "Respiratory Failure",
-      "causeOfDeathType": "Pending investigation",
+      "causeOfDeathType": "Accident",
       "postmortemDone": "No",
       "pathologistName": "",
       "placeOfDeath": "Home",

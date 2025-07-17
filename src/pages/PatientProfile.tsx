@@ -168,22 +168,20 @@ const PatientProfile: React.FC<PatientProfileProps> = ({ id: propId, isModal = f
                 </div>
               )}
           </div>
-          {/* Row 2: Age & Gender, Address, Blood Group */}
+          {/* Row 2: Age & Gender, UHID, Address, Birth ID, Blood Group */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 32, marginBottom: 16 }}>
             <div style={{ flex: 1 }}><span style={{ color: '#888', fontSize: 13 }}>Age & Gender</span><br /><span style={{ fontWeight: 600 }}>{parentData?.dateOfBirth ? `${new Date().getFullYear() - new Date(parentData.dateOfBirth).getFullYear()} yrs,` : ''} {parentData?.gender || birthRecord.gender}</span></div>
+            <div style={{ flex: 1 }}><span style={{ color: '#888', fontSize: 13 }}>UHID</span><br /><span style={{ fontWeight: 700, color: 'red', fontSize: 15 }}>{parentData?.uhid}</span></div>
             <div style={{ flex: 1 }}><span style={{ color: '#888', fontSize: 13 }}>Address</span><br /><span style={{ fontWeight: 600 }}>{parentData?.nationality}</span></div>
+            <div style={{ flex: 1 }}><span style={{ color: '#888', fontSize: 13 }}>Birth ID</span><br /><span style={{ fontWeight: 600 }}>{birthRecord.id}</span></div>
             <div style={{ flex: 1 }}><span style={{ color: '#888', fontSize: 13 }}>Blood Group</span><br /><span style={{ fontWeight: 600 }}>{parentData?.bloodGroup || '-'}</span></div>
           </div>
-          {/* Row 3: UHID, Birth ID */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 32, marginBottom: 16 }}>
-            <div style={{ flex: 1 }}><span style={{ color: '#888', fontSize: 13 }}>UHID</span><br /><span style={{ fontWeight: 700, color: 'red', fontSize: 15 }}>{parentData?.uhid}</span></div>
-            <div style={{ flex: 1 }}><span style={{ color: '#888', fontSize: 13 }}>Birth ID</span><br /><span style={{ fontWeight: 600 }}>{birthRecord.id}</span></div>
-          </div>
+          {/* Row 3: (removed, as UHID and Birth ID are now in Row 2) */}
           {/* Row 4: Birth details grid */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem', marginTop: 24, marginBottom: 24 }}>
             <div><span style={{ color: '#888', fontSize: 13 }}>Date of Birth</span><br /><span style={{ fontWeight: 600 }}>{birthRecord.dateOfBirth}</span></div>
             <div><span style={{ color: '#888', fontSize: 13 }}>Place of Birth</span><br /><span style={{ fontWeight: 600 }}>{birthRecord.placeOfBirth}</span></div>
-            <div><span style={{ color: '#888', fontSize: 13 }}>Age</span><br /><span style={{ fontWeight: 600 }}>{birthRecord.dateOfBirth ? (new Date().getFullYear() - new Date(birthRecord.dateOfBirth).getFullYear()) : '-'}</span></div>
+            {/* Removed Age column */}
             <div><span style={{ color: '#888', fontSize: 13 }}>Father Name</span><br /><span style={{ fontWeight: 600 }}>{birthRecord.fatherName}</span></div>
             <div><span style={{ color: '#888', fontSize: 13 }}>Consulting Doctor</span><br /><span style={{ fontWeight: 600 }}>{parentData?.doctor}</span></div>
             <div><span style={{ color: '#888', fontSize: 13 }}>Civil ID</span><br /><span style={{ fontWeight: 600 }}>{parentData?.civilIds}</span></div>

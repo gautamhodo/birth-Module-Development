@@ -5,6 +5,8 @@ import PageContainer from '../components/PageContainer';
 import Input from '../components/Input';
 import DateInput from '../components/DateInput';
 import DropInput from '../components/DropInput';
+import API_BASE from '../api/api.ts';
+
 
 const tabStyle = {
   padding: '12px 32px',
@@ -102,7 +104,7 @@ const EditPatientProfile: React.FC = () => {
 
   const handleSave = async () => {
     // Update birthRecords
-    await fetch(`http://localhost:3000/birthRecords/${id}`, {
+    await fetch(`${API_BASE}/birthRecords/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -113,7 +115,7 @@ const EditPatientProfile: React.FC = () => {
     });
     // Update ParentData
     if (birthRecord.ParentDataId) {
-      await fetch(`http://localhost:3000/ParentData/${birthRecord.ParentDataId}`, {
+      await fetch(`${API_BASE}/ParentData/${birthRecord.ParentDataId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
