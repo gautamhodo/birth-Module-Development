@@ -5,6 +5,7 @@ import SectionHeading from '../components/SectionHeading';
 import { Printer, ArrowRightSquare } from 'lucide-react';
 import pencilIcon from '../assets/pencil.png';
 import jsPDF from 'jspdf';
+import { getDeathRecords } from '../api/api';
 
 const DeathProfile: React.FC = () => {
   const params = useParams<{ id: string }>();
@@ -13,6 +14,7 @@ const DeathProfile: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const navigate = useNavigate();
+  const [deathId, setDeathId] = useState<string>('');
 
   useEffect(() => {
     setLoading(true);
@@ -23,6 +25,10 @@ const DeathProfile: React.FC = () => {
         if (record) {
           setDeathRecord(record);
           setNotFound(false);
+          // Calculate Death ID (D01, D02, ...)
+          const allRecords = data.deathRecords || [];
+          const idx = allRecords.findIndex((r: any) => String(r.id) === id);
+          setDeathId(idx !== -1 ? `D${String(idx + 1).padStart(2, '0')}` : '');
         } else {
           setNotFound(true);
         }
@@ -152,7 +158,10 @@ const DeathProfile: React.FC = () => {
               {initials(deathRecord.firstName, deathRecord.lastName)}
             </div>
             <div style={{ fontWeight: 600, color: '#038ba4', fontSize: 18, flex: 1 }}>{deathRecord.firstName} {deathRecord.lastName}</div>
-            <div style={{ color: '#009688', fontWeight: 600, fontSize: 16, flex: 1, display: 'flex', alignItems: 'center' }}>{phoneIcon}{deathRecord.mobileNo || '-'}</div>
+            <div style={{ color: '#009688', fontWeight: 600, fontSize: 16, flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center' }}>
+              <span style={{ color: '#888', fontSize: 13 }}>Mobile Number</span>
+              <span style={{ display: 'flex', alignItems: 'center' }}>{phoneIcon}{deathRecord.mobileNo || '-'}</span>
+            </div>
             <button style={{ border: '1px solid #b0b0b0', borderRadius: 5, background: '#fff', padding: '6px 18px', fontWeight: 500, cursor: 'pointer', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 8 }} onClick={() => navigate(`/edit-death/${id}`)}>
               <img src={pencilIcon} alt="Edit" style={{ width: 18, height: 18, marginRight: 6 }} />
               Edit Profile
@@ -161,7 +170,8 @@ const DeathProfile: React.FC = () => {
           {/* Row 2: Doctor, IP No, Date of Death, Gender */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 32, margin: '24px 0' }}>
             <div style={{ flex: 1 }}><span style={{ color: '#888', fontSize: 13 }}>Date of Birth</span><br /><span style={{ fontWeight: 600 }}>{deathRecord.dateOfBirth || '-'}</span></div>
-            <div style={{ flex: 1 }}><span style={{ color: '#888', fontSize: 13 }}>IP No</span><br /><span style={{ fontWeight: 600 }}>{deathRecord.ipNo}</span></div>
+            <div style={{ flex: 1 }}><span style={{ color: '#888', fontSize: 13 }}>IP No</span><br /><span style={{ fontWeight: 600, color: '#038ba4' }}>{deathRecord.ipNo}</span></div>
+            <div style={{ flex: 1 }}><span style={{ color: '#888', fontSize: 13 }}>Death ID</span><br /><span style={{ fontWeight: 600 }}>{deathId}</span></div>
             <div style={{ flex: 1 }}><span style={{ color: '#888', fontSize: 13 }}>Date of Death</span><br /><span style={{ fontWeight: 600 }}>{deathRecord.dateOfDeath}</span></div>
             <div style={{ flex: 1 }}><span style={{ color: '#888', fontSize: 13 }}>Doctor Name</span><br /><span style={{ fontWeight: 600 }}>{deathRecord.doctorName}</span></div>
             <div style={{ flex: 1 }}><span style={{ color: '#888', fontSize: 13 }}>Gender</span><br /><span style={{ fontWeight: 600 }}>{deathRecord.gender}</span></div>

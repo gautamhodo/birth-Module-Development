@@ -82,6 +82,8 @@ const EditPatientProfile: React.FC = () => {
           uhid: parent?.uhid || '',
           bloodGroup: parent?.bloodGroup || '',
           nationality: parent?.nationality || '',
+          motherName: parent?.motherName || '',
+          motherCondition: parent?.motherCondition || '',
         });
         setNewBornForm({
           weight: record?.weight || '',
@@ -111,10 +113,19 @@ const EditPatientProfile: React.FC = () => {
         ...birthRecord,
         ...form,
         ...newBornForm,
+        motherName: form.motherName,
       }),
     });
     // Update ParentData
     if (birthRecord.ParentDataId) {
+      // Split motherName into firstName and lastName
+      let motherFirstName = parentData.firstName;
+      let motherLastName = parentData.lastName;
+      if (form.motherName) {
+        const parts = form.motherName.trim().split(' ');
+        motherFirstName = parts[0] || '';
+        motherLastName = parts.slice(1).join(' ') || '';
+      }
       await fetch(`${API_BASE}/ParentData/${birthRecord.ParentDataId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -125,6 +136,10 @@ const EditPatientProfile: React.FC = () => {
           uhid: form.uhid,
           bloodGroup: form.bloodGroup,
           nationality: form.nationality,
+          motherName: form.motherName,
+          motherCondition: form.motherCondition,
+          firstName: motherFirstName,
+          lastName: motherLastName,
         }),
       });
     }
@@ -199,6 +214,12 @@ const EditPatientProfile: React.FC = () => {
               </div>
               <div>
                 <Input label="Nationality" name="nationality" value={form.nationality} onChange={handleFormChange} placeholder="Nationality" />
+              </div>
+              <div>
+                <Input label="Mother's Name" name="motherName" value={form.motherName} onChange={handleFormChange} placeholder="Mother's Name" />
+              </div>
+              <div>
+                <Input label="Mother's Medical Condition" name="motherCondition" value={form.motherCondition} onChange={handleFormChange} placeholder="Mother's Medical Condition" />
               </div>
             </form>
           </>

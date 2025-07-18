@@ -61,9 +61,26 @@
   color: white;
 }
 
+.edit-btn:hover {
+  background-color: #1769aa;
+}
+
 .delete-btn {
   background-color: #f44336;
   color: white;
+}
+
+.delete-btn:hover {
+  background-color: #b71c1c;
+}
+
+.mortuary-btn {
+  background-color: #ff9800;
+  color: white;
+}
+
+.mortuary-btn:hover {
+  background-color: #c66900;
 }
 
 .print-btn:hover svg {

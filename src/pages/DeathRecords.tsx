@@ -16,6 +16,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import Searchbar from '../components/Searchbar';
 import { getDeathRecords, deleteDeathRecord, addMortuaryRecord } from '../api/api';
 import jsPDF from 'jspdf';
+import FilterBar from '../components/FilterBar';
 
 interface PageProps {
   sidebarCollapsed?: boolean;
@@ -26,6 +27,11 @@ const DeathRecords: React.FC<PageProps> = () => {
   const [records, setRecords] = useState<any[]>([]);
   const [editId, setEditId] = useState<number | null>(null);
   const [editForm, setEditForm] = useState<any>({});
+  // Filter state
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
+  const [status, setStatus] = useState('');
+  const [autoRefresh, setAutoRefresh] = useState('15');
   const [search, setSearch] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
@@ -188,6 +194,7 @@ const DeathRecords: React.FC<PageProps> = () => {
   };
 
   const columns = [
+    { key: 'deathId', header: 'Death ID' },
     { key: 'patient', header: 'Patient' },
     { key: 'doctorName', header: 'Doctor Name' },
     { key: 'ipNo', header: 'IP No' },
@@ -197,28 +204,43 @@ const DeathRecords: React.FC<PageProps> = () => {
     { key: 'actions', header: 'Actions' },
   ];
 
-  const filteredRecords = records.filter(record =>
-    Object.values(record).join(' ').toLowerCase().includes(search.toLowerCase())
-  );
+  // Filtering logic
+  const filteredRecords = records.filter(record => {
+    // Date filter (use dateOfDeath for death records)
+    let dateOk = true;
+    if (fromDate) dateOk = new Date(record.dateOfDeath) >= new Date(fromDate);
+    if (toDate && dateOk) dateOk = new Date(record.dateOfDeath) <= new Date(toDate);
+    // Status filter
+    let statusOk = true;
+    if (status) statusOk = record.status === status;
+    // Search filter
+    let searchOk = true;
+    if (search) searchOk = Object.values(record).join(' ').toLowerCase().includes(search.toLowerCase());
+    return dateOk && statusOk && searchOk;
+  });
 
   return (
     <>
       {/* <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} showDate showTime showCalculator /> */}
       <PageContainer>
         <SectionHeading title="Death Records" subtitle="View and manage all death records" />
+        <FilterBar
+          fromDate={fromDate}
+          toDate={toDate}
+          onFromDateChange={e => setFromDate(e.target.value)}
+          onToDateChange={e => setToDate(e.target.value)}
+          status={status}
+          onStatusChange={e => setStatus(e.target.value)}
+          autoRefresh={autoRefresh}
+          onAutoRefreshChange={e => setAutoRefresh(e.target.value)}
+          onRefresh={() => window.location.reload()}
+          search={search}
+          onSearchChange={e => setSearch(e.target.value)}
+          onExport={handleExportExcel}
+        />
 
         <div className="records-table-container">
-          <div className="records-table-header" style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', alignItems: 'center', paddingLeft: '2.5rem' }}>
-            <div style={{ display: 'flex', gap: '1rem' }}>
-              <button onClick={handleExportExcel} className="btn-with-gradient">
-                Export to Excel
-              </button>
-            </div>
-            <div style={{ minWidth: 250 }}>
-              <Searchbar value={search} onChange={e => setSearch(e.target.value)} />
-            </div>
-          </div>
-          <Table columns={columns} data={filteredRecords.map((record) => {
+          <Table columns={columns} data={filteredRecords.map((record, idx) => {
             const isEditing = editId === record.id;
             // Calculate age if dateOfBirth is present
             let age = '';
@@ -229,6 +251,7 @@ const DeathRecords: React.FC<PageProps> = () => {
             }
             return {
               ...record,
+              deathId: `D${String(idx + 1).padStart(2, '0')}`,
               patient: isEditing ? (
                 <input value={editForm.firstName || ''} onChange={e => handleEditChange('firstName', e.target.value)} />
               ) : (

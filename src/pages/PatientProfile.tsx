@@ -32,6 +32,7 @@ const PatientProfile: React.FC<PatientProfileProps> = ({ id: propId, isModal = f
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [showNewBornDetails, setShowNewBornDetails] = useState(false);
+  const [visitId, setVisitId] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -45,6 +46,18 @@ const PatientProfile: React.FC<PatientProfileProps> = ({ id: propId, isModal = f
           const parent = (data.ParentData || []).find((p: any) => p.id === record.ParentDataId);
           setParentData(parent);
           setNotFound(false);
+          // Calculate Visit ID (YYYYMMDD/NNN)
+          const allRecords = data.birthRecords || [];
+          const idx = allRecords.findIndex((r: any) => String(r.id) === id);
+          let visit = '';
+          if (record.dateOfBirth) {
+            const date = new Date(record.dateOfBirth);
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            visit = `${y}${m}${d}/${String(idx + 1).padStart(3, '0')}`;
+          }
+          setVisitId(visit);
         } else {
           setNotFound(true);
         }
@@ -141,8 +154,19 @@ const PatientProfile: React.FC<PatientProfileProps> = ({ id: propId, isModal = f
               {initials(birthRecord.firstName, birthRecord.lastName)}
             </div>
             <div style={{ fontWeight: 600, color: '#038ba4', fontSize: 18, flex: 1 }}>{birthRecord.firstName} {birthRecord.lastName}</div>
-            <div style={{ color: '#009688', fontWeight: 600, fontSize: 16, flex: 1, display: 'flex', alignItems: 'center' }}>{phoneIcon}{parentData?.mobileNo || '-'}</div>
-            <div style={{ color: '#444', fontWeight: 500, fontSize: 16, flex: 1, display: 'flex', alignItems: 'center' }}>{emailIcon}{parentData?.email || '-'}</div>
+            <div style={{ color: '#009688', fontWeight: 600, fontSize: 16, flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center' }}>
+              <span style={{ color: '#888', fontSize: 13 }}>Mobile Number</span>
+              <span style={{ display: 'flex', alignItems: 'center' }}>{phoneIcon}{parentData?.mobileNo || '-'}</span>
+            </div>
+            {/* Visit ID column */}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center' }}>
+              <span style={{ color: '#888', fontSize: 13 }}>Visit ID</span>
+              <span style={{ color: '#038ba4', fontWeight: 500, fontSize: 16 }}>{visitId}</span>
+            </div>
+            <div style={{ color: '#444', fontWeight: 500, fontSize: 16, flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center' }}>
+              <span style={{ color: '#888', fontSize: 13 }}>Email ID</span>
+              <span style={{ display: 'flex', alignItems: 'center' }}>{emailIcon}{parentData?.email || '-'}</span>
+            </div>
             <button style={{ border: '1px solid #b0b0b0', borderRadius: 5, background: '#fff', padding: '6px 18px', fontWeight: 500, cursor: 'pointer', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 8 }} onClick={() => navigate(`/edit-patient/${id}`)}>
               <img src={pencilIcon} alt="Edit" style={{ width: 18, height: 18, marginRight: 6 }} />
               Edit Patient Profile
@@ -157,7 +181,7 @@ const PatientProfile: React.FC<PatientProfileProps> = ({ id: propId, isModal = f
               {showNewBornDetails && (
                 <div style={{ background: '#fff', border: '1.5px solid #fff', borderRadius: 8, padding: '1.5rem 2.5rem', marginLeft: 12, minWidth: 320, width: '100%', boxShadow: '0 2px 12px rgba(0,0,0,0.06)' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.2rem' }}>
-                    <div><span style={{ color: '#888', fontSize: 13 }}>Mother Name</span><br /><span style={{ fontWeight: 600 }}>{parentData?.firstName} {parentData?.lastName}</span></div>
+                    <div><span style={{ color: '#888', fontSize: 13 }}>Mother Name</span><br /><span style={{ fontWeight: 600 }}>{birthRecord.motherName}</span></div>
                     <div><span style={{ color: '#888', fontSize: 13 }}>Weight</span><br /><span style={{ fontWeight: 600 }}>{birthRecord.weight} Kg</span></div>
                     <div><span style={{ color: '#888', fontSize: 13 }}>Birth Time</span><br /><span style={{ fontWeight: 600 }}>{birthRecord.birthTime}</span></div>
                     <div><span style={{ color: '#888', fontSize: 13 }}>Delivery Type</span><br /><span style={{ fontWeight: 600 }}>{birthRecord.deliveryType}</span></div>
@@ -185,6 +209,7 @@ const PatientProfile: React.FC<PatientProfileProps> = ({ id: propId, isModal = f
             <div><span style={{ color: '#888', fontSize: 13 }}>Father Name</span><br /><span style={{ fontWeight: 600 }}>{birthRecord.fatherName}</span></div>
             <div><span style={{ color: '#888', fontSize: 13 }}>Consulting Doctor</span><br /><span style={{ fontWeight: 600 }}>{parentData?.doctor}</span></div>
             <div><span style={{ color: '#888', fontSize: 13 }}>Civil ID</span><br /><span style={{ fontWeight: 600 }}>{parentData?.civilIds}</span></div>
+            <div><span style={{ color: '#888', fontSize: 13 }}>Mother's Medical Condition</span><br /><span style={{ fontWeight: 600 }}>{parentData?.motherCondition || '-'}</span></div>
           </div>
         </div>
         {/* Bottom Section: Status, QR, Registration, Print Actions */}

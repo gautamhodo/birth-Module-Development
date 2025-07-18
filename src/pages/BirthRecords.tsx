@@ -13,6 +13,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import Searchbar from '../components/Searchbar';
 import { getBirthRecords, deleteBirthRecord } from '../api/api';
 import jsPDF from 'jspdf';
+import FilterBar from '../components/FilterBar';
 
 interface PageProps {
   sidebarCollapsed?: boolean;
@@ -22,13 +23,19 @@ interface PageProps {
 
 
 
-const BirthRecords: React.FC<PageProps> = ({ sidebarCollapsed = false, toggleSidebar }) => {
+const BirthRecords: React.FC = () => {
   const [records, setRecords] = useState<any[]>([]);
   const [editId, setEditId] = useState<number | null>(null);
   const [editForm, setEditForm] = useState<any>({});
   const [search, setSearch] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Filter state
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
+  const [status, setStatus] = useState('');
+  const [autoRefresh, setAutoRefresh] = useState('15');
 
   useEffect(() => {
     getBirthRecords()
@@ -151,9 +158,9 @@ const BirthRecords: React.FC<PageProps> = ({ sidebarCollapsed = false, toggleSid
 
   const columns = [
     { key: 'id', header: 'ID' },
-    // { key: 'id', header: 'ID' },
     { key: 'firstName', header: 'First Name' },
     { key: 'lastName', header: 'Last Name' },
+    { key: 'visitId', header: 'Visit ID' }, // new column
     { key: 'dateOfBirth', header: 'Date of Birth' },
     { key: 'gender', header: 'Gender' },
     { key: 'placeOfBirth', header: 'Place of Birth' },
@@ -161,30 +168,64 @@ const BirthRecords: React.FC<PageProps> = ({ sidebarCollapsed = false, toggleSid
     { key: 'actions', header: 'Actions' },
   ];
 
-  const filteredRecords = records.filter(record =>
-    Object.values(record).join(' ').toLowerCase().includes(search.toLowerCase())
-  );
+  // Filtering logic
+  const filteredRecords = records.filter(record => {
+    // Date filter
+    let dateOk = true;
+    if (fromDate) dateOk = new Date(record.dateOfBirth) >= new Date(fromDate);
+    if (toDate && dateOk) dateOk = new Date(record.dateOfBirth) <= new Date(toDate);
+    // Status filter
+    let statusOk = true;
+    if (status) statusOk = record.status === status;
+    return dateOk && statusOk;
+  });
 
   return (
     <>
       {/* <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} showDate showTime showCalculator /> */}
       <PageContainer>
         <SectionHeading title="Birth Records" subtitle="View and manage all birth records" />
+        <FilterBar
+          fromDate={fromDate}
+          toDate={toDate}
+          onFromDateChange={e => setFromDate(e.target.value)}
+          onToDateChange={e => setToDate(e.target.value)}
+          status={status}
+          onStatusChange={e => setStatus(e.target.value)}
+          autoRefresh={autoRefresh}
+          onAutoRefreshChange={e => setAutoRefresh(e.target.value)}
+          onRefresh={() => window.location.reload()}
+          search={search}
+          onSearchChange={e => setSearch(e.target.value)}
+          onExport={handleExportExcel}
+        />
 
         <div className="records-table-container">
-          <div className="records-table-header" style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', alignItems: 'center', paddingLeft: '2.5rem' }}>
-            <div style={{ display: 'flex', gap: '1rem' }}>
-              <button onClick={handleExportExcel} className="btn-with-gradient">
-                Export to Excel
-              </button>
-            </div>
-            <div style={{ minWidth: 250 }}>
-              <Searchbar value={search} onChange={e => setSearch(e.target.value)} />
-            </div>
-          </div>
-          <Table columns={columns} data={filteredRecords.map((record, idx) => ({
+          <Table columns={columns} data={filteredRecords.map((record, idx) => {
+            // Format Visit ID: YYYYMMDD/NNN
+            let visitId = '';
+            if (record.dateOfBirth) {
+              const date = new Date(record.dateOfBirth);
+              const y = date.getFullYear();
+              const m = String(date.getMonth() + 1).padStart(2, '0');
+              const d = String(date.getDate()).padStart(2, '0');
+              visitId = `${y}${m}${d}/${String(idx + 1).padStart(3, '0')}`;
+            }
+            // Get UHID from parentData if available, else from record.uhid
+            let uhid = record.uhid || '';
+            if (!uhid && record.ParentDataId) {
+              // Try to get from ParentData if available in record
+              // (Assume ParentData is not available here, so fallback to record.uhid)
+            }
+            return {
             id: record.id,
             ...record,
+              visitId: (
+                <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                  <span style={{ color: '#038ba4', fontWeight: 500 }}>{visitId}</span>
+                  <span style={{ color: '#888', fontSize: 12, fontWeight: 400, marginTop: 2 }}>{uhid}</span>
+                </span>
+              ),
             actions: (
               <div className="action-buttons">
                 <button title="Print PDF" className="icon-btn print-btn" onClick={() => handlePrintCertificate(record)}>
@@ -198,7 +239,8 @@ const BirthRecords: React.FC<PageProps> = ({ sidebarCollapsed = false, toggleSid
             gender: editId === record.id ? <input value={editForm.gender || ''} onChange={e => handleEditChange('gender', e.target.value)} /> : record.gender,
             placeOfBirth: editId === record.id ? <input value={editForm.placeOfBirth || ''} onChange={e => handleEditChange('placeOfBirth', e.target.value)} /> : record.placeOfBirth,
             motherName: editId === record.id ? <input value={editForm.motherName || ''} onChange={e => handleEditChange('motherName', e.target.value)} /> : record.motherName,
-          }))} />
+            };
+          })} />
         </div>
       </PageContainer>
       {/* <Footer /> */}

@@ -6,9 +6,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 interface SearchbarProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  inputStyle?: React.CSSProperties;
 }
 
-const Searchbar: React.FC<SearchbarProps> = ({ value, onChange }) => {
+const Searchbar: React.FC<SearchbarProps> = ({ value, onChange, inputStyle }) => {
   return (
     <div className="searchbar-container mb-3 mt-3" style={{ maxWidth: '100%'}}>
       <input
@@ -17,6 +18,7 @@ const Searchbar: React.FC<SearchbarProps> = ({ value, onChange }) => {
         placeholder="Search here..."
         value={value}
         onChange={onChange}
+        style={inputStyle}
       />
       <i className="fa-solid fa-magnifying-glass search-icon"></i>
     </div>
