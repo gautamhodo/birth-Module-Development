@@ -8,6 +8,8 @@ interface AddInputProps {
   placeholder?: string;
   width?: string | number;
 }
+   
+
 
 const AddInput: React.FC<AddInputProps> = ({ label, value, onChange, placeholder, width }) => (
   <div className="addinput-container">
