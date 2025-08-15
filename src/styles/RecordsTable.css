@@ -83,7 +83,29 @@
   background-color: #c66900;
 }
 
+.icon-btn {
+  background: none;
+  border: none;
+  padding: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.icon-btn:hover {
+  background-color: #f0f0f0;
+  transform: translateY(-1px);
+}
+
 .print-btn:hover svg {
   color: #038ba4 !important;
   stroke: #038ba4 !important;
+}
+
+.preview-btn:hover svg {
+  color: #007bff !important;
+  stroke: #007bff !important;
 } 

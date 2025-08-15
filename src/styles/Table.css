@@ -35,6 +35,44 @@
   background: #f9f9f9;
   border-bottom: 2px solid #e3e3e3;
   letter-spacing: 0.5px;
+  position: relative;
+  user-select: none;
+  padding-right: 24px;
+}
+
+.custom-table th.sortable {
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.custom-table th.sortable:hover {
+  background-color: #f0f0f0;
+}
+
+.sort-arrow {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-left: 8px;
+  opacity: 0.3;
+  transition: opacity 0.2s, transform 0.2s;
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.custom-table th.sortable:hover .sort-arrow,
+.custom-table th.sorted .sort-arrow {
+  opacity: 1;
+}
+
+.custom-table th.sorted-asc .sort-arrow {
+  transform: translateY(-50%) rotate(0deg);
+}
+
+.custom-table th.sorted-desc .sort-arrow {
+  transform: translateY(-50%) rotate(180deg);
 }
 
 .custom-table tr:last-child td {

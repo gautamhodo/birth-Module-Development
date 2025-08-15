@@ -85,6 +85,14 @@
   color: #0d92ae;
 }
 
+.birth-icon {
+  color: #0d92ae;
+}
+
+.death-icon {
+  color: #dc3545;
+}
+
 .recent-activity-list-text {
   font-weight: 500;
   color: #2d4a6a;

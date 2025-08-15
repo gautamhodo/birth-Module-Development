@@ -2,7 +2,8 @@
 // const API_BASE = 'http://localhost:3000';
 
 // const API_BASE = `${window.location.protocol}//${window.location.hostname}:3000`;
-const API_BASE = `http://192.168.50.171:3000`;
+// const API_BASE = `http://localhost:5000`;
+const API_BASE = `http://192.168.50.171:5000`;
 export default API_BASE;
 
 export async function getBirthRecords() {

@@ -6,6 +6,8 @@ import Input from '../components/Input';
 import DateInput from '../components/DateInput';
 import DropInput from '../components/DropInput';
 import API_BASE from '../api/api.ts';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 const tabStyle = {
@@ -104,7 +106,36 @@ const EditPatientProfile: React.FC = () => {
     setNewBornForm({ ...newBornForm, [e.target.name]: e.target.value });
   };
 
+  const validateForm = (form: any) => {
+    if (!form.firstName || !/^[A-Za-z]{2,}$/.test(form.firstName.trim())) {
+      toast.error('First Name is required and must be at least 2 letters.');
+      return false;
+    }
+    if (!form.lastName || !/^[A-Za-z ]{2,}$/.test(form.lastName.trim())) {
+      toast.error('Last Name is required and must be at least 2 letters.');
+      return false;
+    }
+    if (!form.mobileNo || !/^\d{10}$/.test(form.mobileNo)) {
+      toast.error('Mobile Number is required and must be 10 digits.');
+      return false;
+    }
+    if (form.doctorName !== undefined && (!form.doctorName || !/^[A-Za-z ]{2,}$/.test(form.doctorName))) {
+      toast.error('Doctor Name is required and must be at least 2 letters.');
+      return false;
+    }
+    return true;
+  };
+
   const handleSave = async () => {
+    // Check for blank required fields
+    const requiredFields = ['firstName', 'lastName', 'mobileNo', 'gender', 'dateOfBirth', 'placeOfBirth', 'email', 'uhid', 'bloodGroup', 'nationality', 'motherName'];
+    for (const field of requiredFields) {
+      if (!form[field] || form[field].toString().trim() === '') {
+        alert('Please fill all required fields.');
+        return;
+      }
+    }
+    if (!validateForm(form)) return;
     // Update birthRecords
     await fetch(`${API_BASE}/birthRecords/${id}`, {
       method: 'PUT',
@@ -143,13 +174,18 @@ const EditPatientProfile: React.FC = () => {
         }),
       });
     }
-    navigate(`/profile/birth/${id}`);
+    // toast.success('Record saved successfully!');
+    toast.success('Updated successfully!');
+    setTimeout(() => {
+      navigate(`/profile/birth/${id}`);
+    }, 1000);
   };
 
   if (loading) return <div style={{ padding: 32 }}>Loading...</div>;
 
   return (
     <PageContainer>
+      <ToastContainer />
       <SectionHeading title="Edit Patient Profile" subtitle="Update patient and new born details" />
       <div style={sectionStyle}>
         <div style={{ display: 'flex', borderBottom: '1px solid #e0e0e0', marginBottom: 32 }}>

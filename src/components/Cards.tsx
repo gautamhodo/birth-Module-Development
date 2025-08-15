@@ -13,7 +13,7 @@ const Cards: React.FC<CardProps> = ({title,subtitle}) => {
         
           <div className="summary-card">
             <div className="summary-title">{title}</div>
-            {subtitle !== undefined && subtitle !== null && subtitle !== 0 && (
+            {subtitle !== undefined && subtitle !== null && (
               <div className="summary-value">{subtitle}</div>
             )}
           </div>

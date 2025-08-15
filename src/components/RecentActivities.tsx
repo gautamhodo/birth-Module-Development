@@ -7,55 +7,98 @@ interface Activity {
   id: string;
   type: 'birth' | 'death';
   name: string;
-  date: Date;
-  icon: React.ComponentType<{ className?: string }>;
-  color: string;
+  ipNumber: string;
+  addedDate: Date;
+  recordId: string;
 }
 
 const RecentActivities = () => {
-  const [dateFilter, setDateFilter] = useState<string>("");
+
   const [recentActivities, setRecentActivities] = useState<Activity[]>([]);
   const navigate = useNavigate();
 
-  // Mock data - replace with actual API call
+  // Fetch recent activities from birth and death records
   useEffect(() => {
-    fetch('/db.json')
-      .then(res => res.json())
-      .then(data => {
-        const birthActivities = (data.birthRecords || []).map((record: any) => ({
-          id: `birth-${record.id}`,
-          type: 'birth',
-          name: `${record.firstName} ${record.lastName}`,
-          date: new Date(record.dateOfBirth),
-          icon: Baby,
-          color: 'text-success',
-        }));
-        const deathActivities = (data.deathRecords || []).map((record: any) => ({
-          id: `death-${record.id}`,
-          type: 'death',
-          name: `${record.firstName} ${record.lastName}`,
-          date: new Date(record.dateOfDeath),
-          icon: Heart,
-          color: 'text-danger',
-        }));
-        // Combine and sort by date descending
-        const allActivities = [...birthActivities, ...deathActivities].sort((a, b) => b.date.getTime() - a.date.getTime());
-        setRecentActivities(allActivities.slice(0, 1)); // Only keep the most recent
-      });
-  }, []);
+    const fetchRecentActivities = async () => {
+      try {
+        console.log('Fetching recent activities from individual endpoints...');
+        
+        // Fetch both birth and death records
+        const [birthResponse, deathResponse] = await Promise.all([
+          fetch('http://192.168.50.171:5000/birthRecords'),
+          fetch('http://192.168.50.171:5000/deathRecords')
+        ]);
 
-  const formatTimeAgo = (date: Date): string => {
+        let allActivities: Activity[] = [];
+
+        // Process birth records
+        if (birthResponse.ok) {
+          const birthRecords = await birthResponse.json();
+          const birthActivities = birthRecords
+            .filter((record: any) => record.addedOn) // Only records with addedOn date
+            .map((record: any) => ({
+              id: `birth-${record.birthId}`,
+              type: 'birth' as const,
+              name: record.babyName || 'Unknown Baby',
+              ipNumber: record.ipNumber || 'N/A',
+              addedDate: new Date(record.addedOn),
+              recordId: record.birthId
+            }));
+          allActivities = [...allActivities, ...birthActivities];
+        }
+
+        // Process death records
+        if (deathResponse.ok) {
+          const deathRecords = await deathResponse.json();
+          const deathActivities = deathRecords
+            .filter((record: any) => record.addedOn) // Only records with addedOn date
+            .map((record: any) => ({
+              id: `death-${record.deathId}`,
+              type: 'death' as const,
+              name: record.fullName || 'Unknown',
+              ipNumber: record.ipNo || 'N/A',
+              addedDate: new Date(record.addedOn),
+              recordId: record.deathId
+            }));
+          allActivities = [...allActivities, ...deathActivities];
+        }
+
+        // Sort by addedDate (most recent first)
+        allActivities.sort((a, b) => b.addedDate.getTime() - a.addedDate.getTime());
+
+        // Show latest 1 birth and latest 1 death
+        const latestBirth = allActivities.find(activity => activity.type === 'birth');
+        const latestDeath = allActivities.find(activity => activity.type === 'death');
+        
+        let filteredActivities: Activity[] = [];
+        if (latestBirth) filteredActivities.push(latestBirth);
+        if (latestDeath) filteredActivities.push(latestDeath);
+        
+        // Sort again to maintain chronological order
+        filteredActivities.sort((a, b) => b.addedDate.getTime() - a.addedDate.getTime());
+        
+        console.log('Recent activities processed:', filteredActivities);
+        setRecentActivities(filteredActivities);
+      } catch (error) {
+        console.error('Error fetching recent activities:', error);
+        setRecentActivities([]);
+      }
+    };
+
+    fetchRecentActivities();
+  }, []); // Fetch once on component mount
+
+  const formatDaysAgo = (date: Date): string => {
     const now = new Date();
     const diffInMs = now.getTime() - date.getTime();
-    const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
-    const diffInDays = Math.floor(diffInHours / 24);
+    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
 
-    if (diffInDays > 0) {
-      return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`;
-    } else if (diffInHours > 0) {
-      return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
+    if (diffInDays === 0) {
+      return "Today";
+    } else if (diffInDays === 1) {
+      return "1 day ago";
     } else {
-      return "Just now";
+      return `${diffInDays} days ago`;
     }
   };
 
@@ -68,9 +111,7 @@ const RecentActivities = () => {
     }
   };
 
-  const handleDateFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setDateFilter(e.target.value);
-  };
+
 
   // Remove showAll, activitiesToShow, and more button logic
 
@@ -81,12 +122,6 @@ const RecentActivities = () => {
           <span className="recent-activities-title">Recent Activity</span>
           <span className="recent-activities-subtitle">Latest Registrations</span>
         </div>
-        <input
-          type="date"
-          value={dateFilter}
-          onChange={handleDateFilterChange}
-          className="recent-activities-date-input"
-        />
       </div>
       <div className="recent-activities-list">
         {recentActivities.length > 0 ? (
@@ -96,20 +131,24 @@ const RecentActivities = () => {
               className="recent-activity-list-item"
               onClick={() => handleActivityClick(activity)}
             >
-              <activity.icon className={`recent-activity-list-icon ${activity.color}`} />
+              {activity.type === 'birth' ? (
+                <Baby className="recent-activity-list-icon birth-icon" />
+              ) : (
+                <Heart className="recent-activity-list-icon death-icon" />
+              )}
               <div>
                 <p className="recent-activity-list-text">
                   {activity.type === 'birth' ? 'New birth registered' : 'New death registered'}
                 </p>
                 <p className="recent-activity-list-subtext">
-                  {activity.name} - {formatTimeAgo(activity.date)}
+                  <span className="font-medium">IP: {activity.ipNumber}</span> • {activity.name} • {formatDaysAgo(activity.addedDate)}
                 </p>
               </div>
             </div>
           ))
         ) : (
           <p className="recent-activities-empty">
-            {dateFilter ? "No activities found for selected date" : "No recent activities"}
+            No recent activities
           </p>
         )}
       </div>

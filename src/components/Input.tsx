@@ -9,9 +9,10 @@ interface InputProps {
   type?: string;
   width?: string | number;
   name: string;
+  disabled?: boolean;
 }
 
-const Input: React.FC<InputProps> = ({ label, value, onChange, placeholder, type = 'text', width, name }) => (
+const Input: React.FC<InputProps> = ({ label, value, onChange, placeholder, type = 'text', width, name, disabled }) => (
   <div className="input-container">
     <label className="input-label">{label}</label>
     <input
@@ -22,6 +23,7 @@ const Input: React.FC<InputProps> = ({ label, value, onChange, placeholder, type
       placeholder={placeholder}
       style={width ? { width } : {}}
       name={name}
+      disabled={disabled}
     />
   </div>
 );

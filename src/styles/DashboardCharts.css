@@ -1,0 +1,121 @@
+.charts-container {
+    margin-top: 2rem;
+  }
+  
+  .charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .chart-card {
+    background: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 8px 24px rgba(0, 8, 14, 0.18);
+    padding: 1.5rem;
+    border: 1px solid #e3eafc;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .chart-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(0, 8, 14, 0.22);
+  }
+  
+  .chart-card-wide {
+    grid-column: span 2;
+  }
+  
+  .chart-header {
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid #0d92ae;
+    padding-bottom: 0.75rem;
+  }
+  
+  .chart-header h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #222;
+    margin: 0 0 0.25rem 0;
+    letter-spacing: 0.5px;
+  }
+  
+  .chart-header p {
+    font-size: 0.9rem;
+    color: #666;
+    margin: 0;
+    opacity: 0.8;
+  }
+  
+  .chart-content {
+    height: 300px;
+    position: relative;
+  }
+  
+  .chart-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    font-size: 1.1rem;
+    color: #666;
+    background: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 8px 24px rgba(0, 8, 14, 0.18);
+    border: 1px solid #e3eafc;
+  }
+  
+  /* Responsive design */
+  @media (max-width: 1200px) {
+    .chart-card-wide {
+      grid-column: span 1;
+    }
+    
+    .charts-grid {
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .charts-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+    
+    .chart-card {
+      padding: 1rem;
+    }
+    
+    .chart-content {
+      height: 250px;
+    }
+    
+    .chart-header h3 {
+      font-size: 1.1rem;
+    }
+    
+    .chart-header p {
+      font-size: 0.85rem;
+    }
+  }
+  
+  /* Custom scrollbar for charts if needed */
+  .chart-content::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .chart-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+  }
+  
+  .chart-content::-webkit-scrollbar-thumb {
+    background: #0d92ae;
+    border-radius: 3px;
+  }
+  
+  .chart-content::-webkit-scrollbar-thumb:hover {
+    background: #0a7a94;
+  }

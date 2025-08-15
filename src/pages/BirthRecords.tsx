@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as XLSX from 'xlsx';
 import '../styles/page.css';
 import '../styles/form.css';
@@ -9,21 +9,22 @@ import PageContainer from '../components/PageContainer';
 import SectionHeading from '../components/SectionHeading';
 import Table from '../components/Table';
 import { Eye, Printer } from 'lucide-react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import Searchbar from '../components/Searchbar';
 import { getBirthRecords, deleteBirthRecord } from '../api/api';
 import jsPDF from 'jspdf';
+import { TemplateCertificateGenerator, ValidationError, CertificateGenerationError } from '../utils/TemplateCertificateGenerator';
 import FilterBar from '../components/FilterBar';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-interface PageProps {
+
+interface BirthRecordsProps {
   sidebarCollapsed?: boolean;
   toggleSidebar?: () => void;
 }
 
-
-
-
-const BirthRecords: React.FC = () => {
+const BirthRecords: React.FC<BirthRecordsProps> = ({ sidebarCollapsed, toggleSidebar }) => {
   const [records, setRecords] = useState<any[]>([]);
   const [editId, setEditId] = useState<number | null>(null);
   const [editForm, setEditForm] = useState<any>({});
@@ -36,19 +37,49 @@ const BirthRecords: React.FC = () => {
   const [toDate, setToDate] = useState('');
   const [status, setStatus] = useState('');
   const [autoRefresh, setAutoRefresh] = useState('15');
+  const [isLoading, setIsLoading] = useState(false);
+
+
+  const fetchBirthRecords = () => {
+    setIsLoading(true);
+    let url = 'http://192.168.50.171:5000/birthRecords';
+    const params = new URLSearchParams();
+
+    if (fromDate) params.append('fromDate', fromDate);
+    if (toDate) params.append('toDate', toDate);
+
+    if (params.toString()) {
+      url += `?${params.toString()}`;
+    }
+
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+        console.log(data)
+        const mappedRecords = data.map((r: any) => ({
+          ...r, // Include all original fields
+          birthId: r.birthId,
+          motherId: r.motherId,
+          babyName: r.babyName || 'B/O Unknown',
+          motherName: r.motherName || 'Unknown',
+          addedOn: r.addedOn ? new Date(r.addedOn).toISOString().split('T')[0] : '',
+          addedOnRaw: r.addedOn, // Keep raw date for filtering
+          ipNumber: r.ipNumber,
+        }));
+        setRecords(mappedRecords);
+      })
+      .catch(err => {
+        console.error('Error fetching records:', err);
+        setRecords([]);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
 
   useEffect(() => {
-    getBirthRecords()
-      .then(data => setRecords(data))
-      .catch(() => setRecords([]));
-  }, []);
-
-  // Refresh data when returning from edit page
-  useEffect(() => {
-    getBirthRecords()
-      .then(data => setRecords(data))
-      .catch(() => setRecords([]));
-  }, [location.pathname]);
+    fetchBirthRecords();
+  }, [fromDate, toDate, location.pathname]);
 
   const handleEdit = (id: number) => {
     navigate(`/birth-registration?id=${id}`);
@@ -58,20 +89,42 @@ const BirthRecords: React.FC = () => {
     setEditForm({ ...editForm, [field]: value });
   };
 
+  const validateRecord = (form: any) => {
+    if (!form.babyName || !/^[A-Za-z]{2,}$/.test(form.babyName.trim())) {
+      toast.error('First Name is required and must be at least 2 letters.');
+      return false;
+    }
+    if (!form.lastName || !/^[A-Za-z ]{2,}$/.test(form.lastName.trim())) {
+      toast.error('Last Name is required and must be at least 2 letters.');
+      return false;
+    }
+    if (!form.mobileNo || !/^\d{10}$/.test(form.mobileNo)) {
+      toast.error('Mobile Number is required and must be 10 digits.');
+      return false;
+    }
+    if (form.doctorName !== undefined && (!form.doctorName || !/^[A-Za-z ]{2,}$/.test(form.doctorName))) {
+      toast.error('Doctor Name is required and must be at least 2 letters.');
+      return false;
+    }
+    return true;
+  };
+
   const handleSave = (id: number) => {
+    if (!validateRecord(editForm)) return;
     setRecords(records.map(r => r.id === id ? { ...editForm, id } : r));
     setEditId(null);
     setEditForm({});
+    toast.success('Updated successfully!');
   };
-
   const handleDelete = async (id: string) => {
     const confirmed = window.confirm('Are you sure you want to delete this record?');
     if (!confirmed) return;
     try {
       await deleteBirthRecord(id);
       setRecords(records.filter(record => record.id !== id));
+      toast.error('Deleted successfully!');
     } catch (error) {
-      alert('Error deleting record.');
+      toast.error('Error deleting record.');
     }
   };
 
@@ -82,106 +135,349 @@ const BirthRecords: React.FC = () => {
     XLSX.writeFile(workbook, 'BirthRecords.xlsx');
   };
 
-  const handlePrintCertificate = (record: any) => {
-    // Fetch parent data if needed
-    fetch('/db.json')
-      .then(res => res.json())
-      .then(data => {
-        const parent = (data.ParentData || []).find((p: any) => p.id === record.ParentDataId);
-        const doc = new jsPDF('p', 'mm', 'a4');
-        doc.setFont('helvetica');
-        doc.setFillColor(253, 241, 230);
-        doc.rect(0, 0, 210, 297, 'F');
-        doc.setDrawColor(201, 164, 122);
-        doc.setLineWidth(2);
-        doc.rect(10, 10, 190, 277, 'S');
-        doc.setFontSize(22);
-        doc.setTextColor(60, 90, 150);
-        doc.text('BIRTH CERTIFICATE', 105, 28, { align: 'center' });
-        doc.setFontSize(12);
-        doc.setTextColor(80, 80, 80);
-        doc.text('This certifies that', 105, 40, { align: 'center' });
-        doc.setFontSize(16);
-        doc.setTextColor(44, 62, 80);
-        doc.text(`${record.firstName || ''} ${record.lastName || ''}`, 105, 52, { align: 'center' });
-        doc.setFontSize(12);
-        doc.setTextColor(80, 80, 80);
-        doc.text('was born to', 105, 62, { align: 'center' });
-        doc.setFontSize(14);
-        doc.setTextColor(44, 62, 80);
-        doc.text(`Mother: ${parent?.firstName || ''} ${parent?.lastName || ''}`, 105, 72, { align: 'center' });
-        doc.text(`Father: ${record.fatherName || '-'}`, 105, 80, { align: 'center' });
-        doc.setFontSize(12);
-        doc.setTextColor(80, 80, 80);
-        doc.text('On', 40, 95);
-        doc.setTextColor(44, 62, 80);
-        doc.text(`${record.dateOfBirth || '-'}`, 60, 95);
-        doc.setTextColor(80, 80, 80);
-        doc.text('at', 100, 95);
-        doc.setTextColor(44, 62, 80);
-        doc.text(`${record.placeOfBirth || '-'}`, 110, 95);
-        doc.setTextColor(80, 80, 80);
-        doc.text('Gender:', 40, 105);
-        doc.setTextColor(44, 62, 80);
-        doc.text(`${record.gender || '-'}`, 60, 105);
-        doc.setTextColor(80, 80, 80);
-        doc.text('Weight:', 100, 105);
-        doc.setTextColor(44, 62, 80);
-        doc.text(`${record.weight || '-'} kg`, 120, 105);
-        doc.setTextColor(80, 80, 80);
-        doc.text('Blood Group:', 40, 115);
-        doc.setTextColor(44, 62, 80);
-        doc.text(`${parent?.bloodGroup || '-'}`, 75, 115);
-        doc.setTextColor(80, 80, 80);
-        doc.text('UHID:', 100, 115);
-        doc.setTextColor(255, 0, 0);
-        doc.text(`${parent?.uhid || '-'}`, 120, 115);
-        doc.setTextColor(80, 80, 80);
-        doc.text('Consulting Doctor:', 40, 125);
-        doc.setTextColor(44, 62, 80);
-        doc.text(`${parent?.doctor || '-'}`, 90, 125);
-        doc.setTextColor(80, 80, 80);
-        doc.text('Civil ID:', 40, 135);
-        doc.setTextColor(44, 62, 80);
-        doc.text(`${parent?.civilIds || '-'}`, 70, 135);
-        doc.setTextColor(80, 80, 80);
-        doc.text('Registered at:', 100, 135);
-        doc.setTextColor(44, 62, 80);
-        doc.text(`${record.registeredAt || '-'}`, 140, 135);
-        doc.setFontSize(10);
-        doc.setTextColor(120, 120, 120);
-        doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 15, 285);
-        doc.text('Signature: ____________________', 140, 285);
-        doc.save(`${record.firstName || 'Birth'}_Certificate.pdf`);
-      });
+  const handlePrintCertificate = async (record: any) => {
+    try {
+      // Fetch parent data exactly like PatientProfile does
+      // Requirements: Generate identical certificate as PatientProfile
+      let parentData = null;
+      if (record.ParentDataId) {
+        try {
+          const response = await fetch(`/api/parentData/${record.ParentDataId}`);
+          if (response.ok) {
+            parentData = await response.json();
+          }
+        } catch (error) {
+          console.warn('Failed to fetch parent data from API:', error);
+        }
+      }
+
+      // If API fetch failed, try fallback to db.json (same as before)
+      if (!parentData && record.ParentDataId) {
+        try {
+          const response = await fetch('/db.json');
+          if (response.ok) {
+            const data = await response.json();
+            parentData = (data.ParentData || []).find((p: any) => p.id === record.ParentDataId);
+          }
+        } catch (error) {
+          console.warn('Failed to fetch parent data from db.json:', error);
+        }
+      }
+
+      // Handle cases where parentData might be null or incomplete - EXACTLY like PatientProfile
+      if (!parentData) {
+        const proceedWithoutParent = confirm('Click Ok to proceed');
+        if (!proceedWithoutParent) {
+          return;
+        }
+      }
+
+      // Pre-validate critical data before attempting generation - EXACTLY like PatientProfile
+      const validationResult = validateRecordForCertificate(record, parentData);
+      if (!validationResult.canProceed) {
+        if (validationResult.criticalErrors.length > 0) {
+          alert(
+            'Cannot Generate Certificate\n\n' +
+            'The following critical information is missing:\n\n' +
+            validationResult.criticalErrors.map(error => `• ${error}`).join('\n') + '\n\n' +
+            'Please edit the record to add the missing information.'
+          );
+          return;
+        }
+
+        if (validationResult.warnings.length > 0) {
+          const proceedWithWarnings = confirm('Click Ok to proceed');
+          if (!proceedWithWarnings) {
+            return;
+          }
+        }
+      }
+
+      // Create enhanced template certificate generator
+      const generator = new TemplateCertificateGenerator();
+
+      // Calculate Visit ID exactly like PatientProfile (YYYYMMDD/NNN)
+      let visitId = '';
+      if (record.dateOfBirth) {
+        const date = new Date(record.dateOfBirth);
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        visitId = `${y}${m}${d}/${String(record.id || record.birthId).slice(-3)}`;
+      }
+
+      // Prepare birth record data for certificate generation - EXACTLY like PatientProfile
+      const birthRecordData = {
+        firstName: record.babyName || record.firstName,
+        lastName: record.lastName || '',
+        babyName: record.babyName || record.firstName,
+        gender: record.gender,
+        dateOfBirth: record.dateOfBirth,
+        birthId: record.birthId || record.id,
+        visitId: visitId,
+        admittedDate: record.admittedDate
+      };
+
+      // Prepare parent data for certificate generation - EXACTLY like PatientProfile
+      const parentDataForCert = parentData ? {
+        firstName: parentData.firstName || '',
+        lastName: parentData.lastName || '',
+        nationality: parentData.nationality || '',
+        address: parentData.address || parentData.nationality || ''
+      } : {
+        firstName: '',
+        lastName: '',
+        nationality: '',
+        address: ''
+      };
+
+      // Generate certificate with comprehensive error handling
+      await generator.generateAndDownloadCertificate(birthRecordData, parentDataForCert);
+
+      // Log successful generation for debugging
+      const babyName = record.babyName || record.firstName;
+      console.log('Birth certificate generated successfully for:', babyName);
+
+    } catch (error) {
+      // Enhanced error handling with specific error types - EXACTLY like PatientProfile
+      console.error('Error generating birth certificate:', error);
+
+      if (error instanceof Error && error.name === 'ValidationError') {
+        // Handle validation errors specifically
+        showValidationError(error);
+      } else if (error instanceof Error && error.name === 'CertificateGenerationError') {
+        // Handle certificate generation errors
+        showGenerationError(error);
+      } else {
+        // Handle unexpected errors
+        showUnexpectedError(error);
+      }
+    }
+  };
+
+  /**
+   * Preview birth certificate in a new window
+   */
+  const handlePreviewCertificate = async (record: any) => {
+    try {
+      // Use the same logic as handlePrintCertificate but open in new window instead of downloading
+
+      // Fetch parent data exactly like PatientProfile does
+      let parentData = null;
+      if (record.ParentDataId) {
+        try {
+          const response = await fetch(`/api/parentData/${record.ParentDataId}`);
+          if (response.ok) {
+            parentData = await response.json();
+          }
+        } catch (error) {
+          console.warn('Failed to fetch parent data from API:', error);
+        }
+      }
+
+      // If API fetch failed, try fallback to db.json
+      if (!parentData && record.ParentDataId) {
+        try {
+          const response = await fetch('/db.json');
+          if (response.ok) {
+            const data = await response.json();
+            parentData = (data.ParentData || []).find((p: any) => p.id === record.ParentDataId);
+          }
+        } catch (error) {
+          console.warn('Failed to fetch parent data from db.json:', error);
+        }
+      }
+
+      // Calculate Visit ID exactly like PatientProfile (YYYYMMDD/NNN)
+      let visitId = '';
+      if (record.dateOfBirth) {
+        const date = new Date(record.dateOfBirth);
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        visitId = `${y}${m}${d}/${String(record.id || record.birthId).slice(-3)}`;
+      }
+
+      // Prepare birth record data for certificate generation
+      const birthRecordData = {
+        firstName: record.babyName || record.firstName,
+        lastName: record.lastName || '',
+        babyName: record.babyName || record.firstName,
+        gender: record.gender,
+        dateOfBirth: record.dateOfBirth,
+        birthId: record.birthId || record.id,
+        visitId: visitId,
+        admittedDate: record.admittedDate
+      };
+
+      // Prepare parent data for certificate generation - handle null case
+      const parentDataForCert = parentData ? {
+        firstName: parentData.firstName || '',
+        lastName: parentData.lastName || '',
+        nationality: parentData.nationality || '',
+        address: parentData.address || parentData.nationality || ''
+      } : {
+        firstName: '',
+        lastName: '',
+        nationality: '',
+        address: ''
+      };
+
+      // Create certificate generator and generate for preview
+      const generator = new TemplateCertificateGenerator();
+      const pdfBlob = await generator.generateForPreview(birthRecordData, parentDataForCert);
+
+      // Open the generated PDF in a new window
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+      window.open(pdfUrl, '_blank');
+
+      console.log('Birth certificate preview opened for:', record.babyName || record.firstName);
+
+    } catch (error) {
+      console.error('Error previewing birth certificate:', error);
+      alert('Failed to preview certificate. Please try again.');
+    }
+  };
+
+  /**
+   * Validate record data for certificate generation - EXACTLY like PatientProfile
+   * Requirements: 3.5 - Validate required fields before certificate generation
+   */
+  const validateRecordForCertificate = (record: any, parentData: any) => {
+    const criticalErrors: string[] = [];
+    const warnings: string[] = [];
+
+    // Critical field validation
+    const babyName = record?.babyName || record?.firstName;
+    if (!babyName?.trim()) {
+      criticalErrors.push('Baby name is required');
+    }
+
+    if (!record?.dateOfBirth?.trim()) {
+      criticalErrors.push('Date of birth is required');
+    }
+
+    // Optional field warnings
+    if (!record.gender) {
+      warnings.push('Gender information is missing');
+    }
+
+    if (!record.placeOfBirth?.trim()) {
+      warnings.push('Place of birth is missing');
+    }
+
+    if (!record.birthId && !record.id) {
+      warnings.push('Registration number is missing');
+    }
+
+    // Parent data warnings
+    if (!parentData) {
+      warnings.push('Parent information is not available');
+    } else {
+      if (!parentData.firstName?.trim()) {
+        warnings.push('Parent name is missing');
+      }
+      if (!parentData.nationality?.trim()) {
+        warnings.push('Parent nationality is missing');
+      }
+    }
+
+    return {
+      canProceed: criticalErrors.length === 0,
+      criticalErrors,
+      warnings
+    };
+  };
+
+  /**
+   * Handle validation errors with user-friendly messages - EXACTLY like PatientProfile
+   * Requirements: 3.5 - Handle validation errors with user-friendly messages
+   */
+  const showValidationError = (error: Error) => {
+    alert(
+      'Certificate Validation Failed\n\n' +
+      `${error.message}\n\n` +
+      'Please check the record information and try again.'
+    );
+  };
+
+  /**
+   * Handle generation errors with fallback options - EXACTLY like PatientProfile
+   * Requirements: 3.5 - Handle generation errors with fallback options
+   */
+  const showGenerationError = (error: Error) => {
+    alert(
+      'Certificate Generation Failed\n\n' +
+      `${error.message}\n\n` +
+      'Please try again. If the problem persists, contact system administrator.'
+    );
+  };
+
+  /**
+   * Handle unexpected errors gracefully - EXACTLY like PatientProfile
+   * Requirements: 3.5 - Handle unexpected errors gracefully
+   */
+  const showUnexpectedError = (error: any) => {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    alert(
+      'Failed to Generate Certificate\n\n' +
+      `Error: ${errorMessage}\n\n` +
+      'Please try again. If the problem persists, contact system administrator.'
+    );
   };
 
   const columns = [
-    { key: 'id', header: 'ID' },
-    { key: 'firstName', header: 'First Name' },
-    { key: 'lastName', header: 'Last Name' },
-    { key: 'visitId', header: 'Visit ID' }, // new column
-    { key: 'dateOfBirth', header: 'Date of Birth' },
-    { key: 'gender', header: 'Gender' },
-    { key: 'placeOfBirth', header: 'Place of Birth' },
-    { key: 'motherName', header: "Mother Name" },
-    { key: 'actions', header: 'Actions' },
+    { key: 'birthId', header: 'Baby ID', sortable: true },
+    { key: 'babyName', header: 'Baby Name', sortable: true },
+    { key: 'ipNumber', header: 'IP No', sortable: true },
+
+    // { key: 'motherId', header: 'Mother ID', sortable: true },
+    { key: 'motherName', header: 'Mother Name', sortable: true },
+    { key: 'addedOn', header: 'Added On', sortable: true },
+    { key: 'actions', header: 'Actions', sortable: false }
   ];
 
   // Filtering logic
   const filteredRecords = records.filter(record => {
-    // Date filter
+    // Search filter
+    let searchOk = true;
+    if (search.trim()) {
+      const searchTerm = search.toLowerCase().trim();
+      searchOk = (
+        (record.babyName && record.babyName.toLowerCase().includes(searchTerm)) ||
+        (record.motherName && record.motherName.toLowerCase().includes(searchTerm)) ||
+        (record.birthId && record.birthId.toString().toLowerCase().includes(searchTerm)) ||
+        (record.ipNumber && record.ipNumber.toString().toLowerCase().includes(searchTerm)) ||
+        (record.firstName && record.firstName.toLowerCase().includes(searchTerm)) ||
+        (record.lastName && record.lastName.toLowerCase().includes(searchTerm))
+      );
+    }
+
+    // Date filter - use addedOnRaw date for filtering
     let dateOk = true;
-    if (fromDate) dateOk = new Date(record.dateOfBirth) >= new Date(fromDate);
-    if (toDate && dateOk) dateOk = new Date(record.dateOfBirth) <= new Date(toDate);
+    if (fromDate && record.addedOnRaw) {
+      const recordDate = new Date(record.addedOnRaw);
+      const filterFromDate = new Date(fromDate);
+      // Set start of day for fromDate
+      filterFromDate.setHours(0, 0, 0, 0);
+      dateOk = recordDate >= filterFromDate;
+    }
+    if (toDate && dateOk && record.addedOnRaw) {
+      const recordDate = new Date(record.addedOnRaw);
+      const filterToDate = new Date(toDate);
+      // Set end of day for toDate to include the entire day
+      filterToDate.setHours(23, 59, 59, 999);
+      dateOk = recordDate <= filterToDate;
+    }
     // Status filter
     let statusOk = true;
     if (status) statusOk = record.status === status;
-    return dateOk && statusOk;
+    return searchOk && dateOk && statusOk;
   });
 
   return (
     <>
+      <ToastContainer />
       {/* <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} showDate showTime showCalculator /> */}
       <PageContainer>
         <SectionHeading title="Birth Records" subtitle="View and manage all birth records" />
@@ -203,6 +499,7 @@ const BirthRecords: React.FC = () => {
         <div className="records-table-container">
           <Table columns={columns} data={filteredRecords.map((record, idx) => {
             // Format Visit ID: YYYYMMDD/NNN
+            console.log(record);
             let visitId = '';
             if (record.dateOfBirth) {
               const date = new Date(record.dateOfBirth);
@@ -218,27 +515,39 @@ const BirthRecords: React.FC = () => {
               // (Assume ParentData is not available here, so fallback to record.uhid)
             }
             return {
-            id: record.id,
-            ...record,
+              id: record.id,
+              ...record,
+              birthId: (
+                <Link
+                  to={`/profile/patient/${record.birthId}`}
+                  style={{ color: '#038ba4', fontWeight: 500, fontSize: 14, textDecoration: 'none', cursor: 'pointer' }}
+                  title="View Patient Profile"
+                >
+                  {record.birthId}
+                </Link>
+              ),
               visitId: (
                 <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
                   <span style={{ color: '#038ba4', fontWeight: 500 }}>{visitId}</span>
                   <span style={{ color: '#888', fontSize: 12, fontWeight: 400, marginTop: 2 }}>{uhid}</span>
                 </span>
               ),
-            actions: (
-              <div className="action-buttons">
-                <button title="Print PDF" className="icon-btn print-btn" onClick={() => handlePrintCertificate(record)}>
-                  <Printer size={20} />
-                </button>
-              </div>
-            ),
-            firstName: editId === record.id ? <input value={editForm.firstName || ''} onChange={e => handleEditChange('firstName', e.target.value)} /> : record.firstName,
-            lastName: editId === record.id ? <input value={editForm.lastName || ''} onChange={e => handleEditChange('lastName', e.target.value)} /> : record.lastName,
-            dateOfBirth: editId === record.id ? <input value={editForm.dateOfBirth || ''} onChange={e => handleEditChange('dateOfBirth', e.target.value)} /> : record.dateOfBirth,
-            gender: editId === record.id ? <input value={editForm.gender || ''} onChange={e => handleEditChange('gender', e.target.value)} /> : record.gender,
-            placeOfBirth: editId === record.id ? <input value={editForm.placeOfBirth || ''} onChange={e => handleEditChange('placeOfBirth', e.target.value)} /> : record.placeOfBirth,
-            motherName: editId === record.id ? <input value={editForm.motherName || ''} onChange={e => handleEditChange('motherName', e.target.value)} /> : record.motherName,
+              actions: (
+                <div className="action-buttons">
+                  <button title="Preview Certificate" className="icon-btn preview-btn" onClick={() => handlePreviewCertificate(record)}>
+                    <Eye size={20} />
+                  </button>
+                  <button title="Print PDF" className="icon-btn print-btn" onClick={() => handlePrintCertificate(record)}>
+                    <Printer size={20} />
+                  </button>
+                </div>
+              ),
+              firstName: editId === record.id ? <input value={editForm.firstName || ''} onChange={e => handleEditChange('firstName', e.target.value)} /> : record.firstName,
+              lastName: editId === record.id ? <input value={editForm.lastName || ''} onChange={e => handleEditChange('lastName', e.target.value)} /> : record.lastName,
+              dateOfBirth: editId === record.id ? <input value={editForm.dateOfBirth || ''} onChange={e => handleEditChange('dateOfBirth', e.target.value)} /> : record.dateOfBirth,
+              gender: editId === record.id ? <input value={editForm.gender || ''} onChange={e => handleEditChange('gender', e.target.value)} /> : record.gender,
+              placeOfBirth: editId === record.id ? <input value={editForm.placeOfBirth || ''} onChange={e => handleEditChange('placeOfBirth', e.target.value)} /> : record.placeOfBirth,
+              motherName: editId === record.id ? <input value={editForm.motherName || ''} onChange={e => handleEditChange('motherName', e.target.value)} /> : record.motherName,
             };
           })} />
         </div>

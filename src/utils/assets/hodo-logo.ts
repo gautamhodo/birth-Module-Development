@@ -1,0 +1,26 @@
+/**
+ * HODO Hospital Logo Assets
+ * Contains logo data and hospital branding colors for certificate generation
+ */
+
+// Hospital brand colors
+export const HOSPITAL_COLORS = {
+  primary: '#2c5aa0',      // Professional blue
+  secondary: '#1e3a5f',    // Darker blue
+  accent: '#dc3545',       // Medical red for cross
+  text: '#333333',         // Dark gray for text
+  light: '#666666'         // Light gray for subtle elements
+};
+
+// Pre-encoded base64 SVG logo for HODO Hospital
+export const HODO_LOGO_BASE64 = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQwIiBoZWlnaHQ9IjkyIiB2aWV3Qm94PSIwIDAgMTQwIDkyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxNDAiIGhlaWdodD0iOTIiIGZpbGw9IiMyYzVhYTAiIHJ4PSI4Ii8+PHJlY3QgeD0iNCIgeT0iNCIgd2lkdGg9IjEzMiIgaGVpZ2h0PSI4NCIgZmlsbD0id2hpdGUiIHJ4PSI0Ii8+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMjAsIDE1KSI+PHJlY3QgeD0iMTIiIHk9IjQiIHdpZHRoPSI2IiBoZWlnaHQ9IjIwIiBmaWxsPSIjZGMzNTQ1Ii8+PHJlY3QgeD0iNiIgeT0iMTAiIHdpZHRoPSIxOCIgaGVpZ2h0PSI2IiBmaWxsPSIjZGMzNTQ1Ii8+PC9nPjx0ZXh0IHg9IjcwIiB5PSIyNSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmb250LXdlaWdodD0iYm9sZCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzJjNWFhMCI+SE9ETzwvdGV4dD48dGV4dCB4PSI3MCIgeT0iNDIiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMiIgZm9udC13ZWlnaHQ9Im5vcm1hbCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzFlM2E1ZiI+SE9TUElUQUw8L3RleHQ+PHRleHQgeD0iNzAiIHk9IjU4IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiMzMzMzMzMiPkthemhha29vdHRhbTwvdGV4dD48Y2lyY2xlIGN4PSIxNSIgY3k9Ijc1IiByPSIzIiBmaWxsPSIjMWUzYTVmIi8+PGNpcmNsZSBjeD0iMTI1IiBjeT0iNzUiIHI9IjMiIGZpbGw9IiMxZTNhNWYiLz48cmVjdCB4PSIyIiB5PSIyIiB3aWR0aD0iMTM2IiBoZWlnaHQ9Ijg4IiBmaWxsPSJub25lIiBzdHJva2U9IiMyYzVhYTAiIHN0cm9rZS13aWR0aD0iMiIgcng9IjYiLz48L3N2Zz4=';
+
+// Pre-encoded fallback logo (simpler version)
+export const HODO_LOGO_FALLBACK = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQwIiBoZWlnaHQ9IjkyIiB2aWV3Qm94PSIwIDAgMTQwIDkyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxNDAiIGhlaWdodD0iOTIiIGZpbGw9IndoaXRlIiBzdHJva2U9IiMyYzVhYTAiIHN0cm9rZS13aWR0aD0iMiIgcng9IjQiLz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgyNSwgMjApIj48cmVjdCB4PSI4IiB5PSIyIiB3aWR0aD0iNCIgaGVpZ2h0PSIxNiIgZmlsbD0iI2RjMzU0NSIvPjxyZWN0IHg9IjIiIHk9IjgiIHdpZHRoPSIxNiIgaGVpZ2h0PSI0IiBmaWxsPSIjZGMzNTQ1Ii8+PC9nPjx0ZXh0IHg9IjcwIiB5PSIzMCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iYm9sZCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzJjNWFhMCI+SE9ETyBIT1NQSVRBTDwvdGV4dD48dGV4dCB4PSI3MCIgeT0iNTAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzMzMzMzMyI+S2F6aGFrb290dGFtPC90ZXh0Pjwvc3ZnPg==';
+
+// Text-based logo fallback (used when SVG fails)
+export const HODO_LOGO_TEXT = {
+  name: 'HODO HOSPITAL',
+  location: 'Kazhakoottam',
+  colors: HOSPITAL_COLORS
+};

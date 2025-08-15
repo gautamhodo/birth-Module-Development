@@ -5,7 +5,7 @@ import BirthRecords from './pages/BirthRecords.tsx';
 import Certificates from './pages/Certificates.tsx';
 import DeathRecords from './pages/DeathRecords.tsx';
 import Profile from './pages/Profile.tsx';
-import PatientProfile from './pages/PatientProfile';
+import PatientProfile from './pages/PatientProfile.tsx';
 import Header from './components/Header.tsx';
 import SideBar from './components/SideBar';
 import Page from './pages/Page.tsx';
@@ -58,6 +58,8 @@ const App: React.FC = () => {
               <Route path="/death-profile/:id" element={<DeathProfile />} />
               <Route path="/death-report/:id" element={<DeathReportDownload />} />
               <Route path="/edit-death/:id" element={<EditDeathProfile />} />
+              <Route path="/profile/patient/:id" element={<PatientProfile />} />
+              <Route path="/death-profile/:id" element={<DeathProfile />} />
             </Routes>
 <Footer/>
           </div>

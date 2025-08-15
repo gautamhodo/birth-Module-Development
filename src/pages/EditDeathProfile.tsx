@@ -6,6 +6,8 @@ import Input from '../components/Input';
 import DateInput from '../components/DateInput';
 import DropInput from '../components/DropInput';
 import API_BASE from '../api/api.ts';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const sectionStyle = {
   background: '#fff',
@@ -41,19 +43,79 @@ const EditDeathProfile: React.FC = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const validateForm = (form: any) => {
+    if (!form.firstName || !/^[A-Za-z]{2,}$/.test(form.firstName.trim())) {
+      toast.error('First Name is required and must be at least 2 letters.');
+      return false;
+    }
+    if (form.firstName && form.firstName.length > 30) {
+      toast.error('First Name cannot be more than 30 characters.');
+      return false;
+    }
+    if (!form.lastName || !/^[A-Za-z ]{2,}$/.test(form.lastName.trim())) {
+      toast.error('Last Name is required and must be at least 2 letters.');
+      return false;
+    }
+    if (form.lastName && form.lastName.length > 30) {
+      toast.error('Last Name cannot be more than 30 characters.');
+      return false;
+    }
+    if (!form.mobileNo || !/^\d{10}$/.test(form.mobileNo)) {
+      toast.error('Mobile Number is required and must be 10 digits.');
+      return false;
+    }
+    if (form.mobileNo && form.mobileNo.length > 10) {
+      toast.error('Mobile Number cannot be more than 10 digits.');
+      return false;
+    }
+    if (!form.doctorName || !/^[A-Za-z ]{2,}$/.test(form.doctorName)) {
+      toast.error('Doctor Name is required and must be at least 2 letters.');
+      return false;
+    }
+    if (form.doctorName && form.doctorName.length > 50) {
+      toast.error('Doctor Name cannot be more than 50 characters.');
+      return false;
+    }
+    if (form.contactNumber !== undefined && (!/^\d{10}$/.test(form.contactNumber))) {
+      toast.error('Contact Number must be 10 digits.');
+      return false;
+    }
+    if (form.contactNumber && form.contactNumber.length > 10) {
+      toast.error('Contact Number cannot be more than 10 digits.');
+      return false;
+    }
+    return true;
+  };
+
   const handleSave = async () => {
+    // Check for blank required fields
+    const requiredFields = [
+      'firstName', 'lastName', 'mobileNo', 'gender', 'dateOfBirth', 'doctorName', 'ipNo', 'dateOfDeath', 'causeOfDeath',
+      'causeOfDeathType', 'postmortemDone', 'pathologistName', 'placeOfDeath', 'deathInformedPerson', 'deathInformedContact', 'deathInformedAddress'
+    ];
+    for (const field of requiredFields) {
+      if (!form[field] || form[field].toString().trim() === '') {
+        alert('Please fill all required fields.');
+        return;
+      }
+    }
+    if (!validateForm(form)) return;
     await fetch(`${API_BASE}/deathRecords/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(form),
     });
-    navigate(`/death-profile/${id}`);
+    toast.success('Updated successfully!');
+    setTimeout(() => {
+      navigate(`/death-profile/${id}`);
+    }, 1000);
   };
 
   if (loading) return <div style={{ padding: 32 }}>Loading...</div>;
 
   return (
     <PageContainer>
+      <ToastContainer />
       <SectionHeading title="Edit Death Profile" subtitle="Update death record details" />
       <div style={sectionStyle}>
         <SectionHeading title="Basic Details" />
@@ -87,7 +149,7 @@ const EditDeathProfile: React.FC = () => {
             <Input label="Doctor Name" name="doctorName" value={form.doctorName || ''} onChange={handleFormChange} placeholder="Doctor Name" />
           </div>
           <div>
-            <Input label="IP No" name="ipNo" value={form.ipNo || ''} onChange={handleFormChange} placeholder="IP No" />
+            <Input label="IP No" name="ipNo" value={form.ipNo || ''} onChange={handleFormChange} placeholder="IP No" disabled />
           </div>
           <div>
             <DateInput label="Date of Death" name="dateOfDeath" value={form.dateOfDeath || ''} onChange={handleFormChange} />
