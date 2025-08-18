@@ -108,11 +108,11 @@ const PatientProfile: React.FC<PatientProfileProps> = ({ id: propId, isModal = f
         if (!proceedWithoutParent) {
           return;
         }
-        showUserFriendlyError(
-          'Parent Data Missing',
-          'Parent data is not available. Please refresh the page and try again.',
-          'If the problem persists, contact system administrator.'
-        );
+        // showUserFriendlyError(
+        //   'Parent Data Missing',
+        //   'Parent data is not available. Please refresh the page and try again.',
+        //   'If the problem persists, contact system administrator.'
+        // );
       }
 
       // Pre-validate critical data before attempting generation
